@@ -51,7 +51,29 @@ addprocs(machines)
 
 ## This should be the actual function !!!
 @everywhere myfunc=function myfunc()
-	return myid()*10
+    node_files = HDFSFile(dfs,"/user/mapred/julia/toy/node.csv")
+    rel_files = HDFSFile(dfs,"/user/mapred/julia/toy/rel.csv")
+    ndf = DataFrame()
+    rdf = DataFrame()
+    open(HDFSFile(node_files), "r") do f
+        bytes = Array(UInt8, filesize(f))
+        read!(f, bytes)
+        #println(bytestring(bytes))
+        d = bytestring(bytes)
+        #println(int(d))
+        ndf= readtable(IOBuffer(d))
+    end
+    open(HDFSFile(rel_files), "r") do f
+        bytes = Array(UInt8, filesize(f))
+        read!(f, bytes)
+        #println(bytestring(bytes))
+        d = bytestring(bytes)
+        #println(int(d))
+        rdf= readtable(IOBuffer(d))
+    end
+    rename!(rdf, :fid,:id)
+    return join(ndf,rdf,on=:id)
+    #return myid()*10
 end
 
 
