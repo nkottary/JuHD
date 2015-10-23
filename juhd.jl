@@ -1,34 +1,87 @@
 using Elly
 using HadoopBlocks
 
-dfs = HDFSClient("localhost", 9000)
+## localhost
+#=
+host="localhost"; port=9000;
+yarn_host="localhost"; yarn_port=8032
 
-node_files = HDFSFile(dfs, "/user/vagrant/node/node_1-100000001_aa")
-## rel_files = HDFSFile(dfs, "/user/vagrant/relationship/relationship_1000000001-1100000001.gz")
+node_file_name="/user/vagrant/node/node_1-100000001_aa"
+## rel_file_name="/user/vagrant/relationship/relationship_1000000001-1100000001.gz"
+=#
 
-node_blk = HadoopBlocks.Block(node_files)
-num_node_blocks=length(node_blk.block)
-println("number of node_blocks is :: $num_node_blocks")
-chunk_data=Array{UInt8,1}()
+## server
+## #=
+host="ip-10-11-191-51.ec2.internal"; port=8020;
+yarn_host="ip-10-35-204-38.ec2.internal"; yarn_port=8050
 
-for i=1:num_node_blocks
-	start_offset = node_blk.block[i][2].start
-	end_offset = node_blk.block[i][2].stop
+## node_file_name="/user/mapred/julia/node/node_1-100000001_aa.gz"
+node_file_name="/user/mapred/dev/node/node"
+## rel_file_name="/user/vagrant/relationship/relationship_1000000001-1100000001.gz"
 
-	## println("The start and end offsets are :: $start_offset and $end_offset")
-	chunk_data = [chunk_data, readbytes(open(node_blk.block[i][1]), end_offset-start_offset)]
-	## println("The sizeof data chunk is ::: $(sizeof(chunk_data))")
+## =#
+
+
+dfs = HDFSClient(host, port)
+
+ugi = UserGroupInformation()
+yarnclnt = YarnClient(yarn_host, yarn_port, ugi)
+
+n = nodecount(yarnclnt)
+nlist = nodes(yarnclnt)
+## yarnam = YarnAppMaster("localhost", 8030, ugi)
+
+keys = nlist.status.keys
+vals = nlist.status.vals
+
+machines=Array{ASCIIString,}(nlist.status.count)
+real_count=0
+for i=1:length(keys)
+	if(Int(nlist.status.slots[i]) == 1)
+		## push!(machines, nlist.status.keys[i].host)	
+		println("The host is :: $(nlist.status.keys[i].host)")
+		real_count += 1
+		machines[real_count] = nlist.status.keys[i].host
+	end
+end
+## @show machines
+
+addprocs(machines)
+## addprocs(machines; tunnel=true, sshflags="-i /home/centos/.ssh/id_rsa")
+
+## This should be the actual function !!!
+@everywhere myfunc=function myfunc()
+	return myid()*10
+end
+
+
+remote_refs=Array{RemoteRef{Channel{Any}},}(length(machines))
+
+## remote_refs=Array{ASCIIString,}(length(machines))
+@sync for j=1:length(machines)
+	## make remote call asynchronously
+    @async remote_refs[j]=remotecall(myfunc, workers()[j])	
 
 end
 
-file_length=length(chunk_data)
-println("The total file size is ::: $(file_length)")
-for m=1:file_length
-   file_line=file_arr[m]
-   line_arr=split(file_line, '\t')
-   println("the pid is $(line_arr[2])")
+# Fetch results (status)
+for k=1:length(machines)
+    ## result = remotecall_fetch(myfunc, remote_refs[k].where)
+    result = fetch(remote_refs[k])
+	println("The results on node $(remote_refs[k].where) is $result")
 end
 
+
+#=
+actual_count=0
+for i=1:length(keys)
+	if(isdefined(keys, i))
+    	## println("the key is $(keys[i])")
+    	## println("the val is $(vals[i])")
+		actual_count+=1
+	end
+end
+=#k
 
 #=
 node_hdfs_blocks = hdfs_blocks(dfs, "/user/vagrant/node/node_1-100000001_aa.gz")
@@ -52,25 +105,36 @@ for i=1:num_blocks
 end
 =#
 
-
 #=
 fr = Elly.HDFSFileReader(dfs, "/user/vagrant/Batting.csv")
 batting_file = HDFSFile(dfs, "/user/vagrant/Batting.csv")
+=#
 
-ugi = UserGroupInformation()
-yarnclnt = YarnClient("localhost", 8032, ugi)
+node_file = HDFSFile(dfs, node_file_name)
+## rel_file = HDFSFile(dfs, rel_file_name)
 
-n = nodecount(yarnclnt)
-nlist = nodes(yarnclnt)
-yarnam = YarnAppMaster("localhost", 8030, ugi)
+node_blk = HadoopBlocks.Block(node_file)
+num_node_blocks=length(node_blk.block)
+println("number of node_blocks is :: $num_node_blocks")
+chunk_data=Array{UInt8,1}()
 
-keys = nlist.status.keys
-vals = nlist.status.vals
+df = DataFrame(
+#=
+for i=1:num_node_blocks
+	start_offset = node_blk.block[i][2].start
+	end_offset = node_blk.block[i][2].stop
 
-for i=1:length(keys)
-	if(isdefined(keys, i))
-    	println("the key is $(keys[i])")
-    	println("the val is $(vals[i])")
-	end
+	## println("The start and end offsets are :: $start_offset and $end_offset")
+	chunk_data = [chunk_data, readbytes(open(node_blk.block[i][1]), end_offset-start_offset)]
+	## println("The sizeof data chunk is ::: $(sizeof(chunk_data))")
 end
 =#
+
+file_length=length(chunk_data)
+println("The total file size is ::: $(file_length)")
+for m=1:file_length
+   file_line=chunk_data[m]
+   line_arr=split(file_line, '\t')
+   println("the pid is $(line_arr[2])")
+end
+
