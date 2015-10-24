@@ -5,6 +5,7 @@ using HadoopBlocks
 #=
 host="localhost"; port=9000;
 yarn_host="localhost"; yarn_port=8032
+## yarnam = YarnAppMaster("localhost", 8030, ugi)
 
 node_file_name="/user/vagrant/node/node_1-100000001_aa"
 ## rel_file_name="/user/vagrant/relationship/relationship_1000000001-1100000001.gz"
@@ -29,7 +30,6 @@ yarnclnt = YarnClient(yarn_host, yarn_port, ugi)
 
 n = nodecount(yarnclnt)
 nlist = nodes(yarnclnt)
-## yarnam = YarnAppMaster("localhost", 8030, ugi)
 
 keys = nlist.status.keys
 vals = nlist.status.vals
@@ -71,6 +71,18 @@ for k=1:length(machines)
 	println("The results on node $(remote_refs[k].where) is $result")
 end
 
+node_fr = Elly.HDFSFileReader(dfs, node_file_name)
+
+node_df=DataFrame{Int64, AbstractString, AbstractString}()
+node_line=readline(node_fr)
+while(!isempty(node_line))
+	println(node_line)
+	push!(node_df, 
+	node_line = readline(node_fr)
+end
+
+rel_fr = Elly.HDFSFileReader(dfs, rel_file_name)
+
 
 #=
 actual_count=0
@@ -85,6 +97,7 @@ end
 
 #=
 node_hdfs_blocks = hdfs_blocks(dfs, "/user/vagrant/node/node_1-100000001_aa.gz")
+node_hdfs_blocks = hdfs_blocks(dfs, node_file_name)
 ## rel_hdfs_blocks = hdfs_blocks(dfs, "/user/vagrant/relationship/relationship_1000000001-1100000001.gz")
 
 hdfs_blocks=node_hdfs_blocks
