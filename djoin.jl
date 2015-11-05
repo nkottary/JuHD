@@ -162,8 +162,10 @@ end
         if j == procid
             continue
         end
-        @async ref = remotecall(j, getrows, procid, typ)
-        push!(refs, ref)
+        @async begin
+            ref = remotecall(j, getrows, procid, typ)
+            push!(refs, ref)
+        end
     end
     for ref in refs
         df = fetch(ref)
@@ -223,12 +225,18 @@ end
     close(f)
 end
 
+# Join the left and right df belonging to you.
+@everywhere function joindf(keycol)
+    return join(g_ctx.accdf_left, g_ctx.accdf_right, on=keycol, kind=:inner)
+end
+
 function main()
     np = nprocs()
+    const keycol = :carid
 
     # The serial part: Get the keyhash
-    leftkeys = readkeys("left.csv", :carid)
-    rightkeys = readkeys("right.csv", :carid)
+    leftkeys = readkeys("left.csv", keycol)
+    rightkeys = readkeys("right.csv", keycol)
     keypool = get_keypool(leftkeys, rightkeys)
     keyhash = get_keyhash(keypool, np)
 
@@ -242,15 +250,35 @@ function main()
     # For each process give a copy of the keyhash and a part of the dataframes.
     @sync for i = 1:np
         @async remotecall(i, init_process, dflparts[i], dfrparts[i], keyhash,
-                          :carid, np)
+                          keycol, np)
     end
 
     # Rearrange the rows of the dataframe between processes.
     for i = 1:np
-        remotecall(i, communicate_push)
+        remotecall(i, communicate_pull)
     end
-    
-    for i = 1:np
-        remotecall(i, logdata)
+
+    sleep(2)  # The below code picks up data before the communicate step without this sleep.
+
+    # call join and get an array of refs
+    refs = RemoteRef[]
+    @sync for i = 1:np
+        @async begin
+            ref = remotecall(i, joindf, keycol)
+            push!(refs, ref)
+        end
     end
+
+    # fetch and concatenate
+    df = DataFrame()
+    for ref in refs
+        df = vcat(df, fetch(ref))
+    end
+
+    println(df)
+
+    # Uncomment to log the context state of each process
+    #     for i = 1:np
+    #         remotecall(i, logdata)
+    #     end
 end
