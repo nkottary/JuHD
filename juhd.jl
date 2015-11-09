@@ -153,7 +153,6 @@ num_node_blocks=length(node_blk.block)
 println("number of node_blocks is :: $num_node_blocks")
 chunk_data=Array{UInt8,1}()
 
-df = DataFrame(
 #=
 for i=1:num_node_blocks
 	start_offset = node_blk.block[i][2].start
