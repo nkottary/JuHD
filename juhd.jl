@@ -13,8 +13,8 @@ node_file_name="/user/vagrant/node/node_1-100000001_aa"
 
 ## server
 ## #=
-host="ip-10-11-191-51.ec2.internal"; port=8020;
-yarn_host="ip-10-35-204-38.ec2.internal"; yarn_port=8050
+host="nn.juliahub.com"; port=8020;
+yarn_host="nn.juliahub.com"; yarn_port=8032
 
 ## node_file_name="/user/mapred/julia/node/node_1-100000001_aa.gz"
 node_file_name="/user/mapred/dev/node/node"
