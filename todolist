@@ -1,0 +1,13 @@
+Use Elly and Blocks to understand mapreduce.
+Go through TeraSort.
+
+Djoin improvements:
+* Let slaves read chunks instead of sending from namenode.
+* Use that to generate keypool.
+* DONE Get rid of the sleeps, be clear about syncing, use remotecall_fetch.
+* DONE Use communicate_push because it will reduce the function calls.
+* Put the join files in a HDFS folder instead of vcatting in a single node.
+* Compare with unix join.
+* Additional things:
+** Send indexes (byte offset) or entire rows ?
+** Parallel Sort after join.
