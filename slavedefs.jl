@@ -116,7 +116,7 @@ function pushrows(typ)
         if (procid == sid) # No need to send to self
             continue
         end
-        @async remotecall(sid, recvrows, dfdict[sid], typ)
+        @async remotecall_fetch(sid, recvrows, dfdict[sid], typ)
     end
 end
 

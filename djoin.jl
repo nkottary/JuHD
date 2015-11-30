@@ -113,6 +113,11 @@ function initslaves()
     return addprocs(machines)
 end
 
+function initslaves_local()
+    return addprocs(2)
+end
+
+
 """
 Main function that performs the distributed join.
  `leftfn` and `rightfn` are the left and right table csv filename.
@@ -121,7 +126,7 @@ Main function that performs the distributed join.
 """
 function main(leftfn, rightfn, opfn, keycol, kind)
     global g_sids
-    g_sids = initslaves()
+    g_sids = initslaves_local()
     np = length(g_sids)
 
     # The serial part: Get the keyhash
@@ -129,29 +134,31 @@ function main(leftfn, rightfn, opfn, keycol, kind)
     rightkeys = readkeys(rightfn, keycol)
     keypool = get_keypool(leftkeys, rightkeys)
     keyhash = get_keyhash(keypool)
+    println("LOG: Getting keyhash done.")
 
     # Partition dataframe
     dfl = readtable(leftfn)
     dflparts = partition_df(dfl)
     dfr = readtable(rightfn)
     dfrparts = partition_df(dfr)
+    println("LOG: Partitioning dataframes done.")
 
     # The parallel parts:
     # For each process give a copy of the keyhash and a part of the dataframes.
-    @everywhere include("/home/ubuntu/JD_join/JuHD/slavedefs.jl")
+    @everywhere include("/home/nishanth/JuHD/slavedefs.jl")
     @sync for sid in g_sids
-        @async remotecall(sid, initprocess, dflparts[sid], dfrparts[sid],
+        @async remotecall_fetch(sid, initprocess, dflparts[sid], dfrparts[sid],
                           keyhash, keycol, g_sids)
     end
 
-    sleep(2)
+    println("LOG: Done Initializing slaves.")
 
     # Rearrange the rows of the dataframe between processes.
-    for sid in g_sids
-        remotecall(sid, communicate_push)
+    @sync for sid in g_sids
+        @async remotecall_fetch(sid, communicate_push)
     end
 
-    sleep(2)
+    println("LOG: Data Movement done.")
 
     # call join and get an array of refs
     refs = RemoteRef[]
@@ -162,38 +169,43 @@ function main(leftfn, rightfn, opfn, keycol, kind)
         end
     end
 
+    println("LOG: Done calling join on each slave.")
+
     # fetch and concatenate
     df = DataFrame()
     for ref in refs
         df = vcat(df, fetch(ref))
     end
 
+    println("LOG: Done accumulating dataframes.")
+
     writetable(opfn, df)
 
-    rmprocs(g_sids...)
-    return 0
     # Uncomment to log the context state of each process
     # for i = 1:np
     #     remotecall(i, logdata)
     # end
+
+    rmprocs(g_sids...)
+    return 0
 end
 
 function basic_test()
-    main("/home/ubuntu/JD_join/JuHD/basic_test/left.csv",
-         "/home/ubuntu/JD_join/JuHD/basic_test/right.csv",
-         "/home/ubuntu/JD_join/JuHD/basic_test/join.csv", :carid, :inner)
+    main("/home/nishanth/JuHD/basic_test/left.csv",
+         "/home/nishanth/JuHD/basic_test/right.csv",
+         "/home/nishanth/JuHD/basic_test/join.csv", :carid, :inner)
 end
 
 function big_test()
-    main("/home/ubuntu/JD_join/JuHD/big_test/left.csv",
-         "/home/ubuntu/JD_join/JuHD/big_test/right.csv",
-         "/home/ubuntu/JD_join/JuHD/big_test/join.csv", :movieId, :inner)
+    main("/home/nishanth/JuHD/big_test/left.csv",
+         "/home/nishanth/JuHD/big_test/right.csv",
+         "/home/nishanth/JuHD/big_test/join.csv", :movieId, :inner)
 end
 
 # Use this function for serial join timing.
 function big_serial_join()
-    dfl = readtable("/home/ubuntu/JD_join/JuHD/big_test/left.csv")
-    dfr = readtable("/home/ubuntu/JD_join/JuHD/big_test/right.csv")
+    dfl = readtable("/home/nishanth/JuHD/big_test/left.csv")
+    dfr = readtable("/home/nishanth/JuHD/big_test/right.csv")
     dfj = join(dfl, dfr, on=:movieId, kind=:inner)
-    writetable("/home/ubuntu/JD_join/JuHD/big_test/join.csv", dfj)
+    writetable("/home/nishanth/JuHD/big_test/join_serial.csv", dfj)
 end
