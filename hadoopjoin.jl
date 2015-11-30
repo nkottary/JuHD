@@ -25,7 +25,7 @@ function readkeys(filename, keycol::Symbol, delim=',')
     if keyidx == 0
         error("Invalid `keycol` argument. The specified column name `$keycol` does not exist in this table.")
     end
-    keys = AbstractString[]
+    keys = Any[]
     for ln in eachline(f)
         vals = split(strip(ln), delim)
         push!(keys, parse(vals[keyidx]))
@@ -113,22 +113,27 @@ function initslaves()
     return addprocs(machines)
 end
 
-function main()
+"""
+Main function that performs the distributed join.
+ `leftfn` and `rightfn` are the left and right table csv filename.
+ `opfn` is the output file name. `keycol` is the column symbol on which to join.
+ `kind` is the type of join i.e, `:inner`, `:outer` etc.
+"""
+function main(leftfn, rightfn, opfn, keycol, kind)
     global g_sids
     g_sids = initslaves()
     np = length(g_sids)
-    const keycol = :carid
 
     # The serial part: Get the keyhash
-    leftkeys = readkeys("/home/ubuntu/JD_join/JuHD/left.csv", keycol)
-    rightkeys = readkeys("/home/ubuntu/JD_join/JuHD/right.csv", keycol)
+    leftkeys = readkeys(leftfn, keycol)
+    rightkeys = readkeys(rightfn, keycol)
     keypool = get_keypool(leftkeys, rightkeys)
     keyhash = get_keyhash(keypool)
 
     # Partition dataframe
-    dfl = readtable("/home/ubuntu/JD_join/JuHD/left.csv")
+    dfl = readtable(leftfn)
     dflparts = partition_df(dfl)
-    dfr = readtable("/home/ubuntu/JD_join/JuHD/right.csv")
+    dfr = readtable(rightfn)
     dfrparts = partition_df(dfr)
 
     # The parallel parts:
@@ -152,7 +157,7 @@ function main()
     refs = RemoteRef[]
     @sync for sid in g_sids
         @async begin
-            ref = remotecall(sid, joindf, keycol)
+            ref = remotecall(sid, joindf, keycol, kind)
             push!(refs, ref)
         end
     end
@@ -163,7 +168,7 @@ function main()
         df = vcat(df, fetch(ref))
     end
 
-    println(df)
+    writetable(opfn, df)
 
     rmprocs(g_sids...)
     return 0
@@ -171,4 +176,24 @@ function main()
     # for i = 1:np
     #     remotecall(i, logdata)
     # end
+end
+
+function basic_test()
+    main("/home/ubuntu/JD_join/JuHD/basic_test/left.csv",
+         "/home/ubuntu/JD_join/JuHD/basic_test/right.csv",
+         "/home/ubuntu/JD_join/JuHD/basic_test/join.csv", :carid, :inner)
+end
+
+function big_test()
+    main("/home/ubuntu/JD_join/JuHD/big_test/left.csv",
+         "/home/ubuntu/JD_join/JuHD/big_test/right.csv",
+         "/home/ubuntu/JD_join/JuHD/big_test/join.csv", :movieId, :inner)
+end
+
+# Use this function for serial join timing.
+function big_serial_join()
+    dfl = readtable("/home/ubuntu/JD_join/JuHD/big_test/left.csv")
+    dfr = readtable("/home/ubuntu/JD_join/JuHD/big_test/right.csv")
+    dfj = join(dfl, dfr, on=:movieId, kind=:inner)
+    writetable("/home/ubuntu/JD_join/JuHD/big_test/join.csv", dfj)
 end

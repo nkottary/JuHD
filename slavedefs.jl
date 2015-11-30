@@ -149,7 +149,7 @@ function logdata()
 end
 
 # Join the left and right df belonging to you.
-function joindf(keycol)
+function joindf(keycol, kind)
     return join(g_ctx.accdf_left, g_ctx.accdf_right,
-                on=keycol, kind=:inner)
+                on=keycol, kind=kind)
 end

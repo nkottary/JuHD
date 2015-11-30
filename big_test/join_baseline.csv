@@ -1,0 +1,500 @@
+"movieId","title","genres","userId","rating","timestamp"
+1,"Toy Story (1995)","Adventure|Animation|Children|Comedy|Fantasy",3,4.0,944919407
+2,"Jumanji (1995)","Adventure|Children|Fantasy",1,3.5,1112486027
+2,"Jumanji (1995)","Adventure|Children|Fantasy",5,3.0,851527569
+3,"Grumpier Old Men (1995)","Comedy|Romance",2,4.0,974820889
+6,"Heat (1995)","Action|Crime|Thriller",4,3.0,840879227
+10,"GoldenEye (1995)","Action|Adventure|Thriller",4,4.0,840878922
+11,"American President, The (1995)","Comedy|Drama|Romance",5,5.0,851527751
+17,"Sense and Sensibility (1995)","Drama|Romance",5,3.0,851526935
+19,"Ace Ventura: When Nature Calls (1995)","Comedy",4,3.0,840878994
+24,"Powder (1995)","Drama|Sci-Fi",3,3.0,945176048
+29,"City of Lost Children, The (Cité des enfants perdus, La) (1995)","Adventure|Drama|Fantasy|Mystery|Sci-Fi",1,3.5,1112484676
+32,"Twelve Monkeys (a.k.a. 12 Monkeys) (1995)","Mystery|Sci-Fi|Thriller",1,3.5,1112484819
+32,"Twelve Monkeys (a.k.a. 12 Monkeys) (1995)","Mystery|Sci-Fi|Thriller",3,4.0,944918047
+32,"Twelve Monkeys (a.k.a. 12 Monkeys) (1995)","Mystery|Sci-Fi|Thriller",4,1.0,840879061
+47,"Seven (a.k.a. Se7en) (1995)","Mystery|Thriller",1,3.5,1112484727
+50,"Usual Suspects, The (1995)","Crime|Mystery|Thriller",1,3.5,1112484580
+50,"Usual Suspects, The (1995)","Crime|Mystery|Thriller",3,5.0,944918018
+60,"Indian in the Cupboard, The (1995)","Adventure|Children|Fantasy",5,3.0,851617589
+62,"Mr. Holland\'s Opus (1995)","Drama",2,5.0,974820598
+62,"Mr. Holland\'s Opus (1995)","Drama",5,5.0,851526935
+70,"From Dusk Till Dawn (1996)","Action|Comedy|Horror|Thriller",2,5.0,974820691
+104,"Happy Gilmore (1996)","Comedy",5,2.0,851526992
+110,"Braveheart (1995)","Action|Drama|War",2,4.0,974820658
+110,"Braveheart (1995)","Action|Drama|War",5,4.0,851527569
+112,"Rumble in the Bronx (Hont faan kui) (1995)","Action|Adventure|Comedy|Crime",1,3.5,1094785740
+140,"Up Close and Personal (1996)","Drama|Romance",5,2.0,851527012
+141,"Birdcage, The (1996)","Comedy",5,5.0,851526935
+150,"Apollo 13 (1995)","Adventure|Drama|IMAX",5,5.0,851527514
+151,"Rob Roy (1995)","Action|Drama|Romance|War",1,4.0,1094785734
+160,"Congo (1995)","Action|Adventure|Mystery|Sci-Fi",3,3.0,945176048
+165,"Die Hard: With a Vengeance (1995)","Action|Crime|Thriller",4,3.0,840878852
+173,"Judge Dredd (1995)","Action|Crime|Sci-Fi",3,2.0,945176099
+175,"Kids (1995)","Drama",3,5.0,944919133
+196,"Species (1995)","Horror|Sci-Fi",3,3.0,945175939
+223,"Clerks (1994)","Comedy",1,4.0,1112485573
+223,"Clerks (1994)","Comedy",3,5.0,944918444
+224,"Don Juan DeMarco (1995)","Comedy|Drama|Romance",5,2.0,851527650
+235,"Ed Wood (1994)","Comedy|Drama",5,3.0,851527723
+242,"Farinelli: il castrato (1994)","Drama|Musical",2,3.0,974820776
+253,"Interview with the Vampire: The Vampire Chronicles (1994)","Drama|Horror",1,4.0,1112484940
+260,"Star Wars: Episode IV - A New Hope (1977)","Action|Adventure|Sci-Fi",1,4.0,1112484826
+260,"Star Wars: Episode IV - A New Hope (1977)","Action|Adventure|Sci-Fi",2,5.0,974821014
+260,"Star Wars: Episode IV - A New Hope (1977)","Action|Adventure|Sci-Fi",3,5.0,944917742
+260,"Star Wars: Episode IV - A New Hope (1977)","Action|Adventure|Sci-Fi",5,5.0,851527608
+266,"Legends of the Fall (1994)","Drama|Romance|War|Western",2,5.0,974820748
+282,"Nell (1994)","Drama",5,4.0,851527569
+293,"Léon: The Professional (a.k.a. The Professional) (Léon) (1994)","Action|Crime|Drama|Thriller",1,4.0,1112484703
+296,"Pulp Fiction (1994)","Comedy|Crime|Drama|Thriller",1,4.0,1112484767
+316,"Stargate (1994)","Action|Adventure|Sci-Fi",3,5.0,945175870
+316,"Stargate (1994)","Action|Adventure|Sci-Fi",5,4.0,851617633
+318,"Shawshank Redemption, The (1994)","Crime|Drama",1,4.0,1112484798
+318,"Shawshank Redemption, The (1994)","Crime|Drama",3,5.0,944917766
+318,"Shawshank Redemption, The (1994)","Crime|Drama",5,5.0,851527608
+329,"Star Trek: Generations (1994)","Adventure|Drama|Sci-Fi",3,5.0,945176021
+329,"Star Trek: Generations (1994)","Adventure|Drama|Sci-Fi",4,3.0,840878898
+337,"What\'s Eating Gilbert Grape (1993)","Drama",1,3.5,1094785709
+337,"What\'s Eating Gilbert Grape (1993)","Drama",3,3.0,944919366
+350,"Client, The (1994)","Drama|Mystery|Thriller",4,4.0,840879087
+350,"Client, The (1994)","Drama|Mystery|Thriller",5,4.0,851527688
+356,"Forrest Gump (1994)","Comedy|Drama|Romance|War",4,4.0,840878922
+364,"Lion King, The (1994)","Adventure|Animation|Children|Drama|Musical|IMAX",5,5.0,851527569
+367,"Mask, The (1994)","Action|Comedy|Crime|Fantasy",1,3.5,1112485980
+367,"Mask, The (1994)","Action|Comedy|Crime|Fantasy",4,3.0,840878994
+367,"Mask, The (1994)","Action|Comedy|Crime|Fantasy",5,3.0,851527650
+368,"Maverick (1994)","Adventure|Comedy|Western",4,4.0,840879198
+368,"Maverick (1994)","Adventure|Comedy|Western",5,5.0,851527650
+370,"Naked Gun 33 1/3: The Final Insult (1994)","Action|Comedy",4,4.0,840879243
+370,"Naked Gun 33 1/3: The Final Insult (1994)","Action|Comedy",5,4.0,851527608
+376,"River Wild, The (1994)","Action|Thriller",5,4.0,851617474
+377,"Speed (1994)","Action|Romance|Thriller",4,4.0,840878994
+377,"Speed (1994)","Action|Romance|Thriller",5,5.0,851527723
+380,"True Lies (1994)","Action|Adventure|Comedy|Romance|Thriller",4,3.0,840878825
+380,"True Lies (1994)","Action|Adventure|Comedy|Romance|Thriller",5,5.0,851527515
+420,"Beverly Hills Cop III (1994)","Action|Comedy|Crime|Thriller",4,3.0,840879019
+431,"Carlito\'s Way (1993)","Crime|Drama",4,4.0,840879357
+440,"Dave (1993)","Comedy|Romance",3,3.0,944918500
+440,"Dave (1993)","Comedy|Romance",4,3.0,840879087
+440,"Dave (1993)","Comedy|Romance",5,5.0,851527569
+442,"Demolition Man (1993)","Action|Adventure|Sci-Fi",3,3.0,945176005
+454,"Firm, The (1993)","Drama|Thriller",4,5.0,840878944
+454,"Firm, The (1993)","Drama|Thriller",5,5.0,851527723
+457,"Fugitive, The (1993)","Thriller",3,5.0,944918215
+457,"Fugitive, The (1993)","Thriller",5,5.0,851527515
+469,"House of the Spirits, The (1993)","Drama|Romance",2,3.0,974820598
+475,"In the Name of the Father (1993)","Drama",5,4.0,851527650
+480,"Jurassic Park (1993)","Action|Adventure|Sci-Fi|Thriller",2,5.0,974820720
+480,"Jurassic Park (1993)","Action|Adventure|Sci-Fi|Thriller",3,5.0,945175820
+480,"Jurassic Park (1993)","Action|Adventure|Sci-Fi|Thriller",4,4.0,840878944
+480,"Jurassic Park (1993)","Action|Adventure|Sci-Fi|Thriller",5,4.0,851527515
+489,"Made in America (1993)","Comedy",4,4.0,840879575
+490,"Malice (1993)","Thriller",3,5.0,944919041
+491,"Man Without a Face, The (1993)","Drama",5,4.0,851527607
+500,"Mrs. Doubtfire (1993)","Comedy|Drama",5,5.0,851527569
+508,"Philadelphia (1993)","Drama",5,5.0,851527688
+512,"Puppet Masters, The (1994)","Horror|Sci-Fi",3,2.0,945176005
+515,"Remains of the Day, The (1993)","Drama|Romance",5,3.0,851527751
+519,"RoboCop 3 (1993)","Action|Crime|Drama|Sci-Fi|Thriller",4,3.0,840879523
+520,"Robin Hood: Men in Tights (1993)","Comedy",4,4.0,840879282
+529,"Searching for Bobby Fischer (1993)","Drama",5,4.0,851527650
+531,"Secret Garden, The (1993)","Children|Drama",4,3.0,840879457
+531,"Secret Garden, The (1993)","Children|Drama",5,5.0,851527751
+541,"Blade Runner (1982)","Action|Sci-Fi|Thriller",1,4.0,1112484603
+541,"Blade Runner (1982)","Action|Sci-Fi|Thriller",2,5.0,974821014
+541,"Blade Runner (1982)","Action|Sci-Fi|Thriller",3,5.0,944918047
+548,"Terminal Velocity (1994)","Action|Mystery|Thriller",4,3.0,840879654
+586,"Home Alone (1990)","Children|Comedy",4,4.0,840879038
+587,"Ghost (1990)","Comedy|Drama|Fantasy|Romance|Thriller",5,4.0,851527608
+588,"Aladdin (1992)","Adventure|Animation|Children|Comedy|Musical",5,5.0,851527688
+589,"Terminator 2: Judgment Day (1991)","Action|Sci-Fi",1,3.5,1112485557
+589,"Terminator 2: Judgment Day (1991)","Action|Sci-Fi",2,5.0,974820658
+589,"Terminator 2: Judgment Day (1991)","Action|Sci-Fi",3,4.0,944897108
+589,"Terminator 2: Judgment Day (1991)","Action|Sci-Fi",4,4.0,840878962
+589,"Terminator 2: Judgment Day (1991)","Action|Sci-Fi",5,5.0,851527569
+590,"Dances with Wolves (1990)","Adventure|Drama|Western",5,5.0,851527514
+593,"Silence of the Lambs, The (1991)","Crime|Horror|Thriller",1,3.5,1112484661
+593,"Silence of the Lambs, The (1991)","Crime|Horror|Thriller",3,5.0,944918215
+593,"Silence of the Lambs, The (1991)","Crime|Horror|Thriller",5,3.0,851527515
+594,"Snow White and the Seven Dwarfs (1937)","Animation|Children|Drama|Fantasy|Musical",4,4.0,840879265
+594,"Snow White and the Seven Dwarfs (1937)","Animation|Children|Drama|Fantasy|Musical",5,5.0,851617589
+595,"Beauty and the Beast (1991)","Animation|Children|Fantasy|Musical|Romance|IMAX",5,5.0,851527515
+596,"Pinocchio (1940)","Animation|Children|Fantasy|Musical",4,4.0,840879424
+608,"Fargo (1996)","Comedy|Crime|Drama|Thriller",5,3.0,851526961
+610,"Heavy Metal (1981)","Action|Adventure|Animation|Horror|Sci-Fi",3,4.0,944919671
+631,"All Dogs Go to Heaven 2 (1996)","Adventure|Animation|Children|Fantasy|Musical|Romance",5,3.0,851527056
+648,"Mission: Impossible (1996)","Action|Adventure|Mystery|Thriller",5,3.0,851526935
+653,"Dragonheart (1996)","Action|Adventure|Fantasy",1,3.0,1094785691
+671,"Mystery Science Theater 3000: The Movie (1996)","Comedy|Sci-Fi",5,5.0,851527056
+708,"Truth About Cats & Dogs, The (1996)","Comedy|Romance",5,3.0,851526991
+718,"Visitors, The (Visiteurs, Les) (1993)","Comedy|Fantasy|Sci-Fi",3,3.0,944917267
+720,"Wallace & Gromit: The Best of Aardman Animation (1996)","Adventure|Animation|Comedy",5,5.0,851527650
+733,"Rock, The (1996)","Action|Adventure|Thriller",4,5.0,840879322
+780,"Independence Day (a.k.a. ID4) (1996)","Action|Adventure|Sci-Fi|Thriller",3,3.0,945175820
+788,"Nutty Professor, The (1996)","Comedy|Fantasy|Romance|Sci-Fi",3,4.0,945175750
+858,"Godfather, The (1972)","Crime|Drama",3,5.0,944917267
+891,"Halloween: The Curse of Michael Myers (Halloween 6: The Curse of Michael Myers) (1995)","Horror|Thriller",2,2.0,974820969
+904,"Rear Window (1954)","Mystery|Thriller",3,5.0,944917450
+905,"It Happened One Night (1934)","Comedy|Romance",3,3.0,944917494
+908,"North by Northwest (1959)","Action|Adventure|Mystery|Romance|Thriller",2,4.0,974820691
+919,"Wizard of Oz, The (1939)","Adventure|Children|Fantasy|Musical",1,3.5,1094785621
+919,"Wizard of Oz, The (1939)","Adventure|Children|Fantasy|Musical",3,4.0,944917558
+924,"2001: A Space Odyssey (1968)","Adventure|Drama|Sci-Fi",1,3.5,1094785598
+924,"2001: A Space Odyssey (1968)","Adventure|Drama|Sci-Fi",2,5.0,974821014
+924,"2001: A Space Odyssey (1968)","Adventure|Drama|Sci-Fi",3,5.0,944917812
+953,"It\'s a Wonderful Life (1946)","Drama|Fantasy|Romance",3,5.0,944917912
+968,"Night of the Living Dead (1968)","Horror|Sci-Fi|Thriller",3,3.0,945175658
+1009,"Escape to Witch Mountain (1975)","Adventure|Children|Fantasy",1,3.5,1112486013
+1036,"Die Hard (1988)","Action|Crime|Thriller",1,4.0,1112485480
+1037,"Lawnmower Man, The (1992)","Action|Horror|Sci-Fi|Thriller",3,3.0,945175963
+1060,"Swingers (1996)","Comedy|Drama",3,5.0,944918310
+1073,"Willy Wonka & the Chocolate Factory (1971)","Children|Comedy|Fantasy|Musical",3,5.0,944918444
+1077,"Sleeper (1973)","Comedy|Sci-Fi",3,4.0,944918167
+1079,"Fish Called Wanda, A (1988)","Comedy|Crime",1,4.0,1094785665
+1079,"Fish Called Wanda, A (1988)","Comedy|Crime",3,4.0,944917797
+1080,"Monty Python\'s Life of Brian (1979)","Comedy",1,3.5,1112485375
+1084,"Bonnie and Clyde (1967)","Crime|Drama",3,5.0,944918103
+1089,"Reservoir Dogs (1992)","Crime|Mystery|Thriller",1,3.5,1112484669
+1089,"Reservoir Dogs (1992)","Crime|Mystery|Thriller",3,5.0,944917558
+1090,"Platoon (1986)","Drama|War",1,4.0,1112485453
+1094,"Crying Game, The (1992)","Drama|Romance|Thriller",3,4.0,944918878
+1097,"E.T. the Extra-Terrestrial (1982)","Children|Drama|Sci-Fi",1,4.0,1112485701
+1097,"E.T. the Extra-Terrestrial (1982)","Children|Drama|Sci-Fi",3,5.0,944918980
+1103,"Rebel Without a Cause (1955)","Drama",3,4.0,944917945
+1121,"Glory Daze (1995)","Drama",2,3.0,974820598
+1125,"Return of the Pink Panther, The (1975)","Comedy|Crime",3,4.0,944918800
+1127,"Abyss, The (1989)","Action|Adventure|Sci-Fi|Thriller",3,3.0,945175784
+1129,"Escape from New York (1981)","Action|Adventure|Sci-Fi|Thriller",3,5.0,945175784
+1136,"Monty Python and the Holy Grail (1975)","Adventure|Comedy|Fantasy",1,3.5,1112484609
+1179,"Grifters, The (1990)","Crime|Drama|Film-Noir",3,3.0,944918103
+1188,"Strictly Ballroom (1992)","Comedy|Romance",3,2.0,944897108
+1193,"One Flew Over the Cuckoo\'s Nest (1975)","Drama",1,3.5,1112484690
+1193,"One Flew Over the Cuckoo\'s Nest (1975)","Drama",3,4.0,944917420
+1196,"Star Wars: Episode V - The Empire Strikes Back (1980)","Action|Adventure|Sci-Fi",1,4.5,1112484742
+1196,"Star Wars: Episode V - The Empire Strikes Back (1980)","Action|Adventure|Sci-Fi",2,5.0,974821014
+1196,"Star Wars: Episode V - The Empire Strikes Back (1980)","Action|Adventure|Sci-Fi",3,5.0,944917859
+1197,"Princess Bride, The (1987)","Action|Adventure|Comedy|Fantasy|Romance",3,5.0,944918215
+1198,"Raiders of the Lost Ark (Indiana Jones and the Raiders of the Lost Ark) (1981)","Action|Adventure",1,4.5,1112484624
+1198,"Raiders of the Lost Ark (Indiana Jones and the Raiders of the Lost Ark) (1981)","Action|Adventure",3,5.0,944917797
+1199,"Brazil (1985)","Fantasy|Sci-Fi",3,4.0,944919671
+1200,"Aliens (1986)","Action|Adventure|Horror|Sci-Fi",1,4.0,1112484560
+1200,"Aliens (1986)","Action|Adventure|Horror|Sci-Fi",3,4.0,944918444
+1201,"Good, the Bad and the Ugly, The (Buono, il brutto, il cattivo, Il) (1966)","Action|Adventure|Western",1,3.0,1112484642
+1206,"Clockwork Orange, A (1971)","Crime|Drama|Sci-Fi|Thriller",3,5.0,944918047
+1208,"Apocalypse Now (1979)","Action|Drama|War",1,3.5,1112484815
+1208,"Apocalypse Now (1979)","Action|Drama|War",3,5.0,944917666
+1210,"Star Wars: Episode VI - Return of the Jedi (1983)","Action|Adventure|Sci-Fi",2,5.0,974820598
+1210,"Star Wars: Episode VI - Return of the Jedi (1983)","Action|Adventure|Sci-Fi",3,5.0,944918856
+1213,"Goodfellas (1990)","Crime|Drama",3,5.0,944917691
+1214,"Alien (1979)","Horror|Sci-Fi",1,4.0,1094785977
+1214,"Alien (1979)","Horror|Sci-Fi",2,5.0,974821014
+1214,"Alien (1979)","Horror|Sci-Fi",3,5.0,944918856
+1215,"Army of Darkness (1993)","Action|Adventure|Comedy|Fantasy|Horror",1,4.0,1094786082
+1215,"Army of Darkness (1993)","Action|Adventure|Comedy|Fantasy|Horror",3,4.0,945175658
+1217,"Ran (1985)","Drama|War",1,3.5,1112484810
+1219,"Psycho (1960)","Crime|Horror",1,4.0,1094785994
+1219,"Psycho (1960)","Crime|Horror",3,4.0,944917371
+1220,"Blues Brothers, The (1980)","Action|Comedy|Musical",3,5.0,944919330
+1221,"Godfather: Part II, The (1974)","Crime|Drama",3,5.0,944917294
+1222,"Full Metal Jacket (1987)","Drama|War",1,3.5,1112484637
+1222,"Full Metal Jacket (1987)","Drama|War",3,5.0,944918407
+1225,"Amadeus (1984)","Drama",3,3.0,944917494
+1228,"Raging Bull (1980)","Drama",3,3.0,944917396
+1230,"Annie Hall (1977)","Comedy|Romance",3,5.0,944917348
+1240,"Terminator, The (1984)","Action|Sci-Fi|Thriller",1,4.0,1112485401
+1240,"Terminator, The (1984)","Action|Sci-Fi|Thriller",3,5.0,944919330
+1242,"Glory (1989)","Drama|War",3,5.0,944918378
+1243,"Rosencrantz and Guildenstern Are Dead (1990)","Comedy|Drama",1,3.0,1112485567
+1246,"Dead Poets Society (1989)","Drama",1,3.5,1094785759
+1247,"Graduate, The (1967)","Comedy|Drama|Romance",3,5.0,944917494
+1249,"Femme Nikita, La (Nikita) (1990)","Action|Crime|Romance|Thriller",1,4.0,1112485382
+1249,"Femme Nikita, La (Nikita) (1990)","Action|Crime|Romance|Thriller",2,5.0,974820691
+1257,"Better Off Dead... (1985)","Comedy|Romance",3,5.0,944919310
+1258,"Shining, The (1980)","Horror",1,4.0,1094785994
+1258,"Shining, The (1980)","Horror",3,5.0,944918103
+1259,"Stand by Me (1986)","Adventure|Drama",1,4.0,1112485440
+1259,"Stand by Me (1986)","Adventure|Drama",2,5.0,974820659
+1259,"Stand by Me (1986)","Adventure|Drama",3,5.0,944918292
+1261,"Evil Dead II (Dead by Dawn) (1987)","Action|Comedy|Fantasy|Horror",1,3.5,1094786113
+1261,"Evil Dead II (Dead by Dawn) (1987)","Action|Comedy|Fantasy|Horror",3,5.0,944918444
+1262,"Great Escape, The (1963)","Action|Adventure|Drama|War",1,3.5,1112484735
+1266,"Unforgiven (1992)","Drama|Western",1,4.0,1112485371
+1266,"Unforgiven (1992)","Drama|Western",3,5.0,944918631
+1270,"Back to the Future (1985)","Adventure|Comedy|Sci-Fi",2,5.0,974821014
+1270,"Back to the Future (1985)","Adventure|Comedy|Sci-Fi",3,5.0,944919671
+1272,"Patton (1970)","Drama|War",3,4.0,944918124
+1276,"Cool Hand Luke (1967)","Drama",3,5.0,944917691
+1278,"Young Frankenstein (1974)","Comedy|Fantasy",1,4.0,1094785986
+1278,"Young Frankenstein (1974)","Comedy|Fantasy",3,5.0,944917980
+1288,"This Is Spinal Tap (1984)","Comedy",3,2.0,944917420
+1291,"Indiana Jones and the Last Crusade (1989)","Action|Adventure",1,3.5,1112485525
+1304,"Butch Cassidy and the Sundance Kid (1969)","Action|Western",1,3.0,1094785720
+1304,"Butch Cassidy and the Sundance Kid (1969)","Action|Western",3,5.0,944918215
+1307,"When Harry Met Sally... (1989)","Comedy|Romance",3,4.0,944918103
+1321,"American Werewolf in London, An (1981)","Comedy|Horror|Thriller",1,4.0,1094786062
+1321,"American Werewolf in London, An (1981)","Comedy|Horror|Thriller",3,5.0,944918821
+1327,"Amityville Horror, The (1979)","Drama|Horror|Mystery|Thriller",2,5.0,974820846
+1330,"April Fool\'s Day (1986)","Horror",3,3.0,944919083
+1333,"Birds, The (1963)","Horror|Thriller",1,4.0,1112484990
+1333,"Birds, The (1963)","Horror|Thriller",3,4.0,944918718
+1345,"Carrie (1976)","Drama|Fantasy|Horror|Thriller",3,4.0,944918718
+1348,"Nosferatu (Nosferatu, eine Symphonie des Grauens) (1922)","Horror",1,3.5,1094786056
+1350,"Omen, The (1976)","Horror|Mystery|Thriller",1,3.5,1094786158
+1356,"Star Trek: First Contact (1996)","Action|Adventure|Sci-Fi|Thriller",2,5.0,974820598
+1356,"Star Trek: First Contact (1996)","Action|Adventure|Sci-Fi|Thriller",3,5.0,945175870
+1358,"Sling Blade (1996)","Drama",1,4.0,1112485419
+1370,"Die Hard 2 (1990)","Action|Adventure|Thriller",1,3.0,1094785764
+1372,"Star Trek VI: The Undiscovered Country (1991)","Action|Mystery|Sci-Fi",3,3.0,945175820
+1373,"Star Trek V: The Final Frontier (1989)","Action|Sci-Fi",3,4.0,945176072
+1374,"Star Trek II: The Wrath of Khan (1982)","Action|Adventure|Sci-Fi|Thriller",1,4.0,1094785746
+1374,"Star Trek II: The Wrath of Khan (1982)","Action|Adventure|Sci-Fi|Thriller",3,5.0,944919728
+1375,"Star Trek III: The Search for Spock (1984)","Action|Adventure|Sci-Fi",3,5.0,945175939
+1376,"Star Trek IV: The Voyage Home (1986)","Adventure|Comedy|Sci-Fi",3,4.0,944919671
+1387,"Jaws (1975)","Action|Horror",1,4.0,1112484913
+1396,"Sneakers (1992)","Action|Comedy|Crime|Drama|Sci-Fi",3,3.0,945175702
+1525,"Warriors of Virtue (1997)","Action|Adventure|Children|Fantasy",1,3.0,1112486150
+1544,"Lost World: Jurassic Park, The (1997)","Action|Adventure|Sci-Fi|Thriller",2,5.0,974820943
+1544,"Lost World: Jurassic Park, The (1997)","Action|Adventure|Sci-Fi|Thriller",3,4.0,945176005
+1580,"Men in Black (a.k.a. MIB) (1997)","Action|Comedy|Sci-Fi",2,4.0,974820748
+1584,"Contact (1997)","Drama|Sci-Fi",1,3.5,1094785656
+1584,"Contact (1997)","Drama|Sci-Fi",3,4.0,945175784
+1603,"Mimic (1997)","Horror|Sci-Fi|Thriller",3,4.0,945175870
+1653,"Gattaca (1997)","Drama|Sci-Fi|Thriller",3,4.0,945175730
+1673,"Boogie Nights (1997)","Drama",2,4.0,974820776
+1674,"Witness (1985)","Drama|Romance|Thriller",3,4.0,944918748
+1676,"Starship Troopers (1997)","Action|Sci-Fi",3,5.0,945175784
+1721,"Titanic (1997)","Drama|Romance",3,4.0,944897108
+1748,"Dark City (1998)","Adventure|Film-Noir|Sci-Fi|Thriller",2,5.0,974821014
+1750,"Star Kid (1997)","Adventure|Children|Fantasy|Sci-Fi",1,3.5,1112486201
+1762,"Deep Rising (1998)","Action|Horror|Sci-Fi",3,4.0,945176072
+1779,"Sphere (1998)","Sci-Fi|Thriller",3,3.0,945175939
+1810,"Primary Colors (1998)","Comedy|Drama",3,3.0,944919366
+1831,"Lost in Space (1998)","Action|Adventure|Sci-Fi",3,5.0,945176048
+1848,"Borrowers, The (1997)","Adventure|Children|Comedy|Fantasy",1,3.5,1112486032
+1876,"Deep Impact (1998)","Drama|Sci-Fi|Thriller",3,4.0,945175963
+1882,"Godzilla (1998)","Action|Sci-Fi|Thriller",3,4.0,945176072
+1909,"X-Files: Fight the Future, The (1998)","Action|Crime|Mystery|Sci-Fi|Thriller",3,5.0,945175896
+1917,"Armageddon (1998)","Action|Romance|Sci-Fi|Thriller",3,4.0,945175963
+1920,"Small Soldiers (1998)","Animation|Children|Fantasy|War",1,3.5,1112486098
+1921,"Pi (1998)","Drama|Sci-Fi|Thriller",3,4.0,945175702
+1965,"Repo Man (1984)","Comedy|Sci-Fi",2,3.0,974820720
+1967,"Labyrinth (1986)","Adventure|Fantasy|Musical",1,4.0,1112485739
+1969,"Nightmare on Elm Street 2: Freddy\'s Revenge, A (1985)","Horror",2,2.0,974820969
+1970,"Nightmare on Elm Street 3: Dream Warriors, A (1987)","Horror|Thriller",2,2.0,974820969
+1971,"Nightmare on Elm Street 4: The Dream Master, A (1988)","Horror|Thriller",2,2.0,974820943
+1972,"Nightmare on Elm Street 5: The Dream Child, A (1989)","Horror",2,2.0,974820969
+1973,"Freddy\'s Dead: The Final Nightmare (Nightmare on Elm Street Part 6: Freddy\'s Dead, A) (1991)","Horror",2,3.0,974820916
+1974,"Friday the 13th (1980)","Horror|Mystery|Thriller",2,5.0,974820598
+1986,"Halloween 5: The Revenge of Michael Myers (1989)","Horror",2,2.0,974820969
+1994,"Poltergeist (1982)","Horror|Thriller",1,3.5,1094786087
+1997,"Exorcist, The (1973)","Horror|Mystery",1,3.5,1094786034
+2009,"Soylent Green (1973)","Drama|Mystery|Sci-Fi|Thriller",3,5.0,945175730
+2011,"Back to the Future Part II (1989)","Adventure|Comedy|Sci-Fi",3,3.0,944897108
+2012,"Back to the Future Part III (1990)","Adventure|Comedy|Sci-Fi|Western",3,3.0,945176021
+2018,"Bambi (1942)","Animation|Children|Drama",3,4.0,944918590
+2021,"Dune (1984)","Adventure|Sci-Fi",1,4.0,1112485929
+2028,"Saving Private Ryan (1998)","Action|Drama|War",3,4.0,944918378
+2034,"Black Hole, The (1979)","Children|Sci-Fi",3,4.0,945176099
+2046,"Flight of the Navigator (1986)","Adventure|Children|Sci-Fi",3,5.0,945175870
+2053,"Honey, I Blew Up the Kid (1992)","Children|Comedy|Sci-Fi",3,3.0,945176099
+2054,"Honey, I Shrunk the Kids (1989)","Adventure|Children|Comedy|Fantasy|Sci-Fi",3,4.0,945175939
+2076,"Blue Velvet (1986)","Drama|Mystery|Thriller",3,5.0,944918683
+2093,"Return to Oz (1985)","Adventure|Children|Fantasy",3,5.0,944919671
+2100,"Splash (1984)","Comedy|Fantasy|Romance",1,4.0,1112485955
+2105,"Tron (1982)","Action|Adventure|Sci-Fi",3,4.0,944919728
+2117,"1984 (Nineteen Eighty-Four) (1984)","Drama|Sci-Fi",3,5.0,944918444
+2118,"Dead Zone, The (1983)","Thriller",1,4.0,1094786092
+2118,"Dead Zone, The (1983)","Thriller",3,5.0,944897108
+2138,"Watership Down (1978)","Adventure|Animation|Children|Drama|Fantasy",1,4.0,1112485789
+2140,"Dark Crystal, The (1982)","Adventure|Fantasy",1,4.0,1112485705
+2140,"Dark Crystal, The (1982)","Adventure|Fantasy",3,4.0,945175784
+2143,"Legend (1985)","Adventure|Fantasy|Romance",1,4.0,1112485951
+2150,"Gods Must Be Crazy, The (1980)","Adventure|Comedy",3,5.0,944919001
+2173,"Navigator: A Mediaeval Odyssey, The (1988)","Adventure|Fantasy|Sci-Fi",1,4.0,1112485887
+2174,"Beetlejuice (1988)","Comedy|Fantasy",1,4.0,1112485843
+2193,"Willow (1988)","Action|Adventure|Fantasy",1,4.0,1112485753
+2194,"Untouchables, The (1987)","Action|Crime|Drama",1,3.5,1112485486
+2236,"Simon Birch (1998)","Drama",3,4.0,944918292
+2253,"Toys (1992)","Comedy|Fantasy",1,3.5,1112486122
+2288,"Thing, The (1982)","Action|Horror|Sci-Fi|Thriller",1,4.0,1094786077
+2288,"Thing, The (1982)","Action|Horror|Sci-Fi|Thriller",3,5.0,944919671
+2291,"Edward Scissorhands (1990)","Drama|Fantasy|Romance",1,4.0,1094785777
+2291,"Edward Scissorhands (1990)","Drama|Fantasy|Romance",2,2.0,974820748
+2311,"2010: The Year We Make Contact (1984)","Sci-Fi",3,4.0,944919729
+2329,"American History X (1998)","Crime|Drama",3,4.0,944918748
+2366,"King Kong (1933)","Action|Adventure|Fantasy|Horror",3,4.0,944918310
+2371,"Fletch (1985)","Comedy|Crime|Mystery",3,4.0,944918915
+2391,"Simple Plan, A (1998)","Crime|Drama|Thriller",3,5.0,944918215
+2407,"Cocoon (1985)","Comedy|Sci-Fi",3,4.0,945175896
+2428,"Faculty, The (1998)","Horror|Sci-Fi",3,4.0,945175870
+2448,"Virus (1999)","Horror|Sci-Fi",3,5.0,944897783
+2454,"Fly, The (1958)","Horror|Mystery|Sci-Fi",2,4.0,974820916
+2455,"Fly, The (1986)","Drama|Horror|Sci-Fi|Thriller",2,4.0,974820720
+2455,"Fly, The (1986)","Drama|Horror|Sci-Fi|Thriller",3,4.0,944919729
+2505,"8MM (1999)","Drama|Mystery|Thriller",3,4.0,944897783
+2528,"Logan\'s Run (1976)","Action|Adventure|Sci-Fi",3,4.0,945175784
+2529,"Planet of the Apes (1968)","Action|Drama|Sci-Fi",3,5.0,945175680
+2530,"Beneath the Planet of the Apes (1970)","Action|Sci-Fi",3,4.0,945175939
+2531,"Battle for the Planet of the Apes (1973)","Action|Sci-Fi",3,3.0,945175820
+2532,"Conquest of the Planet of the Apes (1972)","Action|Sci-Fi",3,4.0,945175963
+2533,"Escape from the Planet of the Apes (1971)","Action|Sci-Fi",3,3.0,945175702
+2541,"Cruel Intentions (1999)","Drama",3,1.0,944897441
+2542,"Lock, Stock & Two Smoking Barrels (1998)","Comedy|Crime|Thriller",1,4.0,1112485447
+2551,"Dead Ringers (1988)","Drama|Horror|Thriller",3,4.0,944918610
+2567,"EDtv (1999)","Comedy",3,3.0,944897654
+2571,"Matrix, The (1999)","Action|Sci-Fi|Thriller",3,5.0,945175658
+2574,"Out-of-Towners, The (1999)","Comedy",3,3.0,944897877
+2613,"Night of the Comet (1984)","Comedy|Horror|Sci-Fi",3,4.0,945175820
+2615,"My Science Project (1985)","Adventure|Sci-Fi",3,4.0,945176005
+2628,"Star Wars: Episode I - The Phantom Menace (1999)","Action|Adventure|Sci-Fi",1,4.0,1112485988
+2628,"Star Wars: Episode I - The Phantom Menace (1999)","Action|Adventure|Sci-Fi",3,5.0,945175939
+2640,"Superman (1978)","Action|Adventure|Sci-Fi",3,4.0,945175730
+2642,"Superman III (1983)","Action|Adventure|Sci-Fi",3,3.0,945176099
+2643,"Superman IV: The Quest for Peace (1987)","Action|Adventure|Sci-Fi",3,1.0,945176099
+2644,"Dracula (1931)","Horror",1,3.5,1112484994
+2648,"Frankenstein (1931)","Drama|Horror|Sci-Fi",1,3.5,1094786017
+2657,"Rocky Horror Picture Show, The (1975)","Comedy|Horror|Musical|Sci-Fi",3,3.0,945175730
+2662,"War of the Worlds, The (1953)","Action|Drama|Sci-Fi",3,3.0,945175658
+2664,"Invasion of the Body Snatchers (1956)","Horror|Sci-Fi|Thriller",1,3.5,1094786148
+2668,"Swamp Thing (1982)","Horror|Sci-Fi",3,4.0,945176048
+2676,"Instinct (1999)","Drama|Thriller",3,1.0,944897405
+2683,"Austin Powers: The Spy Who Shagged Me (1999)","Action|Adventure|Comedy",1,3.5,1094785650
+2692,"Run Lola Run (Lola rennt) (1998)","Action|Crime",1,3.5,1112484749
+2694,"Big Daddy (1999)","Comedy",3,4.0,944897855
+2699,"Arachnophobia (1990)","Comedy|Horror",3,3.0,945175870
+2710,"Blair Witch Project, The (1999)","Drama|Horror|Thriller",3,5.0,944897405
+2716,"Ghostbusters (a.k.a. Ghost Busters) (1984)","Action|Comedy|Sci-Fi",1,3.5,1094786012
+2722,"Deep Blue Sea (1999)","Action|Horror|Sci-Fi|Thriller",3,4.0,944897654
+2750,"Radio Days (1987)","Comedy|Drama",3,4.0,944918444
+2761,"Iron Giant, The (1999)","Adventure|Animation|Children|Drama|Sci-Fi",1,3.0,1112484759
+2762,"Sixth Sense, The (1999)","Drama|Horror|Mystery",1,4.0,1112485367
+2788,"Monty Python\'s And Now for Something Completely Different (1971)","Comedy",3,5.0,944918516
+2791,"Airplane! (1980)","Comedy",2,2.0,974820659
+2791,"Airplane! (1980)","Comedy",3,5.0,944917666
+2797,"Big (1988)","Comedy|Drama|Fantasy|Romance",3,4.0,944918980
+2804,"Christmas Story, A (1983)","Children|Comedy",1,3.5,1112485414
+2808,"Universal Soldier (1992)","Action|Sci-Fi",3,4.0,945176072
+2857,"Yellow Submarine (1968)","Adventure|Animation|Comedy|Fantasy|Musical",3,3.0,944897405
+2858,"American Beauty (1999)","Comedy|Drama",2,3.0,974820659
+2872,"Excalibur (1981)","Adventure|Fantasy",1,4.0,1112485697
+2872,"Excalibur (1981)","Adventure|Fantasy",3,5.0,944919898
+2900,"Monkey Shines (1988)","Horror|Sci-Fi",3,3.0,945175820
+2901,"Phantasm (1979)","Horror|Sci-Fi",3,3.0,945175784
+2916,"Total Recall (1990)","Action|Adventure|Sci-Fi|Thriller",3,4.0,945175730
+2918,"Ferris Bueller\'s Day Off (1986)","Comedy",1,3.5,1112485465
+2918,"Ferris Bueller\'s Day Off (1986)","Comedy",3,5.0,944918500
+2944,"Dirty Dozen, The (1967)","Action|Drama|War",1,4.0,1112485433
+2947,"Goldfinger (1964)","Action|Adventure|Thriller",1,3.5,1112485580
+2947,"Goldfinger (1964)","Action|Adventure|Thriller",3,4.0,944919407
+2948,"From Russia with Love (1963)","Action|Adventure|Thriller",2,5.0,974820659
+2948,"From Russia with Love (1963)","Action|Adventure|Thriller",3,4.0,944918864
+2949,"Dr. No (1962)","Action|Adventure|Thriller",3,4.0,944918980
+2951,"Fistful of Dollars, A (Per un pugno di dollari) (1964)","Action|Western",2,4.0,974820598
+2959,"Fight Club (1999)","Action|Crime|Drama|Thriller",1,4.0,1094785698
+2968,"Time Bandits (1981)","Adventure|Comedy|Fantasy|Sci-Fi",1,4.0,1112485825
+2968,"Time Bandits (1981)","Adventure|Comedy|Fantasy|Sci-Fi",3,5.0,944919672
+2985,"RoboCop (1987)","Action|Crime|Drama|Sci-Fi|Thriller",3,5.0,944919729
+2986,"RoboCop 2 (1990)","Action|Crime|Sci-Fi|Thriller",3,2.0,945176048
+3000,"Princess Mononoke (Mononoke-hime) (1997)","Action|Adventure|Animation|Drama|Fantasy",1,3.5,1112484569
+3030,"Yojimbo (1961)","Action|Adventure",1,3.0,1112484548
+3033,"Spaceballs (1987)","Comedy|Sci-Fi",3,5.0,944919729
+3037,"Little Big Man (1970)","Western",1,3.5,1112485563
+3039,"Trading Places (1983)","Comedy",3,5.0,944919189
+3070,"Adventures of Buckaroo Banzai Across the 8th Dimension, The (1984)","Adventure|Comedy|Sci-Fi",3,4.0,944919729
+3072,"Moonstruck (1987)","Comedy|Romance",3,4.0,944918567
+3081,"Sleepy Hollow (1999)","Fantasy|Horror|Mystery|Romance",1,4.0,1094786143
+3098,"Natural, The (1984)","Drama",3,4.0,944918468
+3142,"U2: Rattle and Hum (1988)","Documentary|Musical",3,4.0,944917348
+3150,"War Zone, The (1999)","Drama|Thriller",2,4.0,974820720
+3153,"7th Voyage of Sinbad, The (1958)","Action|Adventure|Fantasy",1,4.0,1112485816
+3159,"Fantasia 2000 (1999)","Animation|Children|Musical|IMAX",2,3.0,974820598
+3173,"Any Given Sunday (1999)","Drama",2,4.0,974820869
+3265,"Hard-Boiled (Lat sau san taam) (1992)","Action|Crime|Drama|Thriller",1,3.5,1112484525
+3438,"Teenage Mutant Ninja Turtles (1990)","Action|Children|Comedy|Fantasy|Sci-Fi",1,3.5,1112486094
+3450,"Grumpy Old Men (1993)","Comedy",2,5.0,974820846
+3476,"Jacob\'s Ladder (1990)","Horror|Mystery",1,3.5,1094786139
+3479,"Ladyhawke (1985)","Adventure|Fantasy|Romance",1,4.0,1112485734
+3489,"Hook (1991)","Adventure|Comedy|Fantasy",1,4.0,1112486024
+3499,"Misery (1990)","Drama|Horror|Thriller",1,4.0,1112484918
+3513,"Rules of Engagement (2000)","Drama|Thriller",2,5.0,974820659
+3534,"28 Days (2000)","Drama",2,3.0,974820889
+3555,"U-571 (2000)","Action|Thriller|War",2,4.0,974820748
+3565,"Where the Heart Is (2000)","Comedy|Drama",2,3.0,974820776
+3703,"Road Warrior, The (Mad Max 2) (1981)","Action|Adventure|Sci-Fi",2,4.0,974821014
+3753,"Patriot, The (2000)","Action|Drama|War",2,4.0,974820691
+3889,"Highlander: Endgame (Highlander IV) (2000)","Action|Adventure|Fantasy",1,4.0,1112486138
+3917,"Hellraiser (1987)","Horror",2,4.0,974820720
+3918,"Hellbound: Hellraiser II (1988)","Horror",2,3.0,974820943
+3923,"Return of the Fly (1959)","Horror|Sci-Fi",2,4.0,974820943
+3926,"Voyage to the Bottom of the Sea (1961)","Adventure|Sci-Fi",2,4.0,974820889
+3927,"Fantastic Voyage (1966)","Adventure|Sci-Fi",2,5.0,974820748
+3928,"Abbott and Costello Meet Frankenstein (1948)","Comedy|Horror",2,5.0,974820776
+3930,"Creature from the Black Lagoon, The (1954)","Adventure|Horror|Sci-Fi",2,5.0,974820943
+3932,"Invisible Man, The (1933)","Horror|Sci-Fi",1,3.0,1094786172
+3937,"Runaway (1984)","Sci-Fi|Thriller",2,4.0,974820916
+3959,"Time Machine, The (1960)","Action|Adventure|Sci-Fi",2,5.0,974820659
+3996,"Crouching Tiger, Hidden Dragon (Wo hu cang long) (2000)","Action|Drama|Romance",1,4.0,1094785727
+3997,"Dungeons & Dragons (2000)","Adventure|Fantasy",1,3.5,1112486192
+4011,"Snatch (2000)","Comedy|Crime|Thriller",1,4.0,1112485406
+4027,"O Brother, Where Art Thou? (2000)","Adventure|Comedy|Crime",1,4.0,1112485460
+4105,"Evil Dead, The (1981)","Fantasy|Horror|Thriller",1,3.5,1094786104
+4128,"Lost Boys, The (1987)","Comedy|Horror|Thriller",1,4.0,1112484933
+4133,"Masters of the Universe (1987)","Action|Adventure|Fantasy|Sci-Fi",1,3.0,1112486169
+4226,"Memento (2000)","Mystery|Thriller",1,3.5,1112484493
+4306,"Shrek (2001)","Adventure|Animation|Children|Comedy|Fantasy|Romance",1,4.0,1094785784
+4446,"Final Fantasy: The Spirits Within (2001)","Adventure|Animation|Fantasy|Sci-Fi",1,3.5,1112485970
+4467,"Adventures of Baron Munchausen, The (1988)","Adventure|Comedy|Fantasy",1,4.0,1112485822
+4571,"Bill & Ted\'s Excellent Adventure (1989)","Adventure|Comedy|Sci-Fi",1,4.0,1112485880
+4720,"Others, The (2001)","Drama|Horror|Mystery|Thriller",1,3.5,1094786008
+4754,"Wicker Man, The (1973)","Drama|Horror|Mystery|Thriller",1,4.0,1112484983
+4878,"Donnie Darko (2001)","Drama|Mystery|Sci-Fi|Thriller",1,3.5,1112484537
+4896,"Harry Potter and the Sorcerer\'s Stone (a.k.a. Harry Potter and the Philosopher\'s Stone) (2001)","Adventure|Children|Fantasy",1,4.0,1112485731
+4911,"Jabberwocky (1977)","Adventure|Comedy|Fantasy",1,4.0,1112485961
+4915,"Beastmaster, The (1982)","Action|Adventure|Fantasy",1,3.0,1112486076
+4941,"Flash Gordon (1980)","Action|Adventure|Sci-Fi",1,3.5,1112486007
+4980,"Bill & Ted\'s Bogus Journey (1991)","Adventure|Comedy|Fantasy|Sci-Fi",1,3.5,1112486055
+4993,"Lord of the Rings: The Fellowship of the Ring, The (2001)","Adventure|Fantasy",1,5.0,1112484682
+5026,"Brotherhood of the Wolf (Pacte des loups, Le) (2001)","Action|Mystery|Thriller",1,4.0,1112485858
+5039,"Dragonslayer (1981)","Action|Adventure|Fantasy",1,4.0,1112485898
+5040,"Conan the Destroyer (1984)","Action|Adventure|Fantasy",1,3.0,1112486086
+5060,"M*A*S*H (a.k.a. MASH) (1970)","Comedy|Drama|War",3,5.0,944917450
+5146,"Vampire Hunter D: Bloodlust (Banpaia hantâ D) (2000)","Animation|Fantasy|Horror|Sci-Fi",1,3.5,1094786132
+5171,"Time Machine, The (2002)","Action|Adventure|Sci-Fi",1,4.0,1112486104
+5540,"Clash of the Titans (1981)","Action|Adventure|Fantasy|Romance",1,4.0,1112485905
+5679,"Ring, The (2002)","Horror|Mystery|Thriller",1,3.5,1094786108
+5797,"Company of Wolves, The (1984)","Fantasy|Horror",1,4.0,1112485871
+5816,"Harry Potter and the Chamber of Secrets (2002)","Adventure|Fantasy",1,4.0,1112485720
+5898,"Sword and the Sorcerer, The (1982)","Action|Adventure|Fantasy",1,3.5,1112486002
+5952,"Lord of the Rings: The Two Towers, The (2002)","Adventure|Fantasy",1,5.0,1112484619
+5999,"Heavy Metal 2000 (2000)","Action|Adventure|Animation|Fantasy|Sci-Fi",1,3.5,1112486150
+6093,"Last Unicorn, The (1982)","Animation|Children|Fantasy",1,4.0,1112485713
+6242,"Ringu (Ring) (1998)","Horror|Mystery|Thriller",1,3.5,1094786004
+6333,"X2: X-Men United (2003)","Action|Adventure|Sci-Fi|Thriller",1,4.0,1112485502
+6502,"28 Days Later (2002)","Action|Horror|Sci-Fi",1,3.5,1094786048
+6539,"Pirates of the Caribbean: The Curse of the Black Pearl (2003)","Action|Adventure|Comedy|Fantasy",1,4.0,1112485508
+6754,"Underworld (2003)","Action|Fantasy|Horror",1,4.0,1112485984
+6755,"Bubba Ho-tep (2002)","Comedy|Horror",1,3.5,1094786067
+6774,"Videodrome (1983)","Fantasy|Horror|Sci-Fi|Thriller",1,4.0,1112485786
+6807,"Monty Python\'s The Meaning of Life (1983)","Comedy",1,3.5,1112484686
+6834,"Wilder Napalm (1993)","Comedy|Fantasy|Romance",1,3.5,1112486060
+6888,"Scary Movie 3 (2003)","Comedy|Horror",1,3.0,1112486127
+7001,"Invasion of the Body Snatchers (1978)","Horror|Mystery|Sci-Fi|Thriller",1,3.5,1094786101
+7045,"Witches, The (1990)","Children|Fantasy",1,3.5,1112485834
+7046,"Witches of Eastwick, The (1987)","Comedy|Fantasy|Horror|Thriller",1,4.0,1112485934
+7153,"Lord of the Rings: The Return of the King, The (2003)","Action|Adventure|Drama|Fantasy",1,5.0,1112484633
+7164,"Peter Pan (2003)","Action|Adventure|Children|Fantasy",1,3.5,1112485923
+7247,"Chitty Chitty Bang Bang (1968)","Adventure|Children|Comedy|Fantasy|Musical",1,3.5,1112485958
+7387,"Dawn of the Dead (1978)","Action|Drama|Horror",1,3.5,1094786161
+7389,"One Million Years B.C. (1966)","Adventure|Fantasy",1,4.0,1112486045
+7438,"Kill Bill: Vol. 2 (2004)","Action|Drama|Thriller",1,4.0,1112484789
+7449,"Godsend (2004)","Drama|Horror|Thriller",1,3.5,1112486163
+7454,"Van Helsing (2004)","Action|Adventure|Fantasy|Horror",1,4.0,1112486108
+7482,"Enter the Dragon (1973)","Action|Crime",1,3.0,1112484575
+7757,"Jason and the Argonauts (1963)","Action|Adventure|Fantasy",1,4.0,1112485819
+8368,"Harry Potter and the Prisoner of Azkaban (2004)","Adventure|Fantasy|IMAX",1,4.0,1112485688
+8482,"Picture of Dorian Gray, The (1945)","Drama|Fantasy|Horror",1,3.5,1112485781
+8507,"Freaks (1932)","Crime|Drama|Horror",1,5.0,1094786027
+8636,"Spider-Man 2 (2004)","Action|Adventure|Sci-Fi|IMAX",1,4.5,1112485493
+8690,"Slaughterhouse-Five (1972)","Comedy|Drama|Sci-Fi|War",1,3.5,1112484795
+8961,"Incredibles, The (2004)","Action|Adventure|Animation|Children|Comedy",1,4.0,1112485629
+31696,"Constantine (2005)","Action|Fantasy|Horror|Thriller",1,4.0,1112485748
