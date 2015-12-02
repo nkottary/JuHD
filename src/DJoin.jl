@@ -42,6 +42,7 @@ function get_uniquekeys(keycol, pool=Set())
 end
 
 """
+
 Get pool of keys. `left_file` and `right_file` are the two
  CSV files representing the table, and `keycol` is the column representing
  the keys.
@@ -117,17 +118,17 @@ function initslaves_local()
     return addprocs(2)
 end
 
-
 """
 Main function that performs the distributed join.
  `leftfn` and `rightfn` are the left and right table csv filename.
  `opfn` is the output file name. `keycol` is the column symbol on which to join.
  `kind` is the type of join i.e, `:inner`, `:outer` etc.
 """
-function main(leftfn, rightfn, opfn, keycol, kind)
-    global g_sids
-    g_sids = initslaves_local()
-    np = length(g_sids)
+function djoin(leftfn, rightfn, opfn; keycol=nothing, kind=nothing)
+    keycol == nothing && throw(ArgumentError("Missing join argument `keycol`."))
+    kind == nothing && throw(ArgumentError("Missing join argument `kind`."))
+
+    global g_sids = initslaves_local()
 
     # The serial part: Get the keyhash
     leftkeys = readkeys(leftfn, keycol)
@@ -145,7 +146,7 @@ function main(leftfn, rightfn, opfn, keycol, kind)
 
     # The parallel parts:
     # For each process give a copy of the keyhash and a part of the dataframes.
-    @everywhere include("/home/nishanth/JuHD/slavedefs.jl")
+    @everywhere include(joinpath(Pkg.dir("DJoin"), "src", "SlaveDefs.jl"))
     @sync for sid in g_sids
         @async remotecall_fetch(sid, initprocess, dflparts[sid], dfrparts[sid],
                           keyhash, keycol, g_sids)
@@ -188,24 +189,4 @@ function main(leftfn, rightfn, opfn, keycol, kind)
 
     rmprocs(g_sids...)
     return 0
-end
-
-function basic_test()
-    main("/home/nishanth/JuHD/basic_test/left.csv",
-         "/home/nishanth/JuHD/basic_test/right.csv",
-         "/home/nishanth/JuHD/basic_test/join.csv", :carid, :inner)
-end
-
-function big_test()
-    main("/home/nishanth/JuHD/big_test/left.csv",
-         "/home/nishanth/JuHD/big_test/right.csv",
-         "/home/nishanth/JuHD/big_test/join.csv", :movieId, :inner)
-end
-
-# Use this function for serial join timing.
-function big_serial_join()
-    dfl = readtable("/home/nishanth/JuHD/big_test/left.csv")
-    dfr = readtable("/home/nishanth/JuHD/big_test/right.csv")
-    dfj = join(dfl, dfr, on=:movieId, kind=:inner)
-    writetable("/home/nishanth/JuHD/big_test/join_serial.csv", dfj)
 end
