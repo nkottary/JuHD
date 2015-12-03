@@ -1,6 +1,7 @@
 # Definitions for the slave nodes.
 
 using DataFrames
+using Blocks
 
 type ProcessCtx
     dfdict_left::Dict{Int, DataFrame}  # Parts of the left DataFrame to be
@@ -44,16 +45,45 @@ function idxs_to_dfdict(df, idxs)
     return dfdict
 end
 
+# Given a tuple `blk` of filename and range and `headers`
+# an array of header symbols, get a dataframe.
+function get_df_from_block(blk, headers)
+    iobuff = as_recordio(blk)
+    # First chunk already has header
+    return g_sids[1] == myid() ? readtable(iobuff) : readtable(iobuff,
+                                                               header=false,
+                                                               names=map(Symbol, headers))
+end
+
 # Figure out what parts of the received dataframe should be given to what
 # process. Store this in a global context. Also initialize the accumulator
 # dataframe in the global context.
-function initprocess(dfl, dfr, keyhash, keycol, sids)
+#
+# Parameters:
+# `leftblk` and `rightblk`: The `Block` instance of the left and right
+#                           CSV files.
+# `keyhash`               : The keyhash generated on the name node (master).
+# `keycol`                : The column on which to join.
+# `sids`                  : The slave id's.  The output of `workers()` on master.
+function initprocess(leftblk, rightblk, leftheaders, rightheaders,
+                     keyhash, keycol, sids)
     global g_sids = sids
+    println("Getting blocks")
+    @time begin
+    dfl = get_df_from_block(leftblk, leftheaders)
+    dfr = get_df_from_block(rightblk, rightheaders)
+    end
+    println("Getting idxs")
+    @time begin
     idxsl = arrangement_idxs(dfl[keycol], keyhash)
     idxsr = arrangement_idxs(dfr[keycol], keyhash)
+    end
 
+    println("Getting dict")
+    @time begin
     dfdict_left = idxs_to_dfdict(dfl, idxsl)
     dfdict_right = idxs_to_dfdict(dfr, idxsr)
+    end
 
     procid = myid()
     accdf_left = dfdict_left[procid]      # df belonging to self
@@ -77,9 +107,7 @@ function pullrows(typ)
     procid = myid()
     refs = RemoteRef[]
     @sync for sid in g_sids
-        if sid == procid
-            continue
-        end
+        sid == procid && continue
         @async begin
             ref = remotecall(sid, getrows, procid, typ)
             push!(refs, ref)
@@ -87,9 +115,7 @@ function pullrows(typ)
     end
     for ref in refs
         df = fetch(ref)
-        if size(df, 1) == 0
-            continue
-        end
+        size(df, 1) == 0 && continue
         if typ == :left
             g_ctx.accdf_left = vcat(g_ctx.accdf_left, df)
         else
@@ -104,18 +130,10 @@ end
 # the left dataframe or right dataframe.
 function pushrows(typ)
     procid = myid()
-    if typ == :left
-        dfdict = g_ctx.dfdict_left
-    else
-        dfdict = g_ctx.dfdict_right
-    end
+    dfdict = typ == :left ? g_ctx.dfdict_left : g_ctx.dfdict_right
     @sync for sid in g_sids
-        if (size(dfdict[sid], 1) == 0) # No need to send empty df's
-            continue
-        end
-        if (procid == sid) # No need to send to self
-            continue
-        end
+        size(dfdict[sid], 1) == 0 && continue # No need to send empty df's
+        procid == sid && continue # No need to send to self
         @async remotecall_fetch(sid, recvrows, dfdict[sid], typ)
     end
 end
@@ -153,3 +171,39 @@ function joindf(keycol, kind)
     return join(g_ctx.accdf_left, g_ctx.accdf_right,
                 on=keycol, kind=kind)
 end
+
+# Read a chunk of file `fn`.  The size of the chunk is to be calculated
+# as `number_of_rows_in_fn / length(g_sids)`.  The starting point for reading
+# is calculated as `(indexof(myid() in g_sids) - 1) * chunk_size + 1`.  If this
+# is the last process then it should read to end of file.
+# function readchunk(fn)
+#     filesize = parse(split(readall(`wc -l $fn`))[1]) - 1 # -1 to exclude headers
+#     chunksize = div(filesize, length(g_sids))
+#     pid = myid()
+#     idx = find(x -> x == pid, g_sids)[1]
+#     startpt = (idx - 1) * chunksize + 1
+#     endpt = idx == length(g_sids) ? filesize : startpt + chunksize - 1
+#     return readchunk(fn, startpt, endpt)
+# end
+# 
+# function readchunk(fn, startpt, endpt)
+#     file = open(fn, "r")
+#     chardata = readline(file) # read headers
+# 
+#     # seek till startpt
+#     i = 1
+#     while !eof(file) && i != startpt
+#         readline(file)
+#         i += 1
+#     end
+# 
+#     # read till endpt
+#     while !eof(file)
+#         ln = readline(file)
+#         chardata = chardata * ln
+#         i == endpt && break
+#         i += 1
+#     end
+# 
+#     return readtable(IOBuffer(chardata))
+# end

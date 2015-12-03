@@ -13,6 +13,7 @@
 
 using Elly
 using DataFrames
+using Blocks
 
 """
 Read only the key column from CSV and return it as an array.
@@ -94,13 +95,16 @@ function partition_df(df)
     return ret
 end
 
+const AWS = ("nn.juliahub.com", 8020, 8032)
+const LOCALHOST = ("localhost", 9000, 8032)
+
 """
 Initialize julia processes on the slave nodes.
 """
-function initslaves()
-    dfs = HDFSClient("nn.juliahub.com", 8020)
+function initslaves(url, dfsport, yarnport)
+    dfs = HDFSClient(url, dfsport)
     ugi = UserGroupInformation()
-    yarncli = YarnClient("nn.juliahub.com", 8032, ugi)
+    yarncli = YarnClient(url, yarnport, ugi)
     nlist = nodes(yarncli)
     keys = nlist.status.keys
     slots = nlist.status.slots
@@ -111,12 +115,28 @@ function initslaves()
         end
     end
     # start processes on the slaves.
-    return addprocs(machines)
+    global g_sids = addprocs(machines)
+    @everywhere include(joinpath(Pkg.dir("DJoin"), "src", "SlaveDefs.jl"))
 end
 
-function initslaves_local()
-    return addprocs(2)
+function initslaves(num)
+    global g_sids = addprocs(num)
+    @everywhere include(joinpath(Pkg.dir("DJoin"), "src", "SlaveDefs.jl"))
 end
+
+cleanupslaves() = rmprocs(g_sids...)
+
+# Get a dict where key is the processor id and value is the tuple (filename, range).
+# The tuple is an element in the block array field of the Block type.
+chunkdict(filename) = Dict(zip(g_sids, Block(Base.FS.File(filename)).block))
+
+# Get the headers as an array of symbols from a csv file
+getheaders(filename) = open(filename) do f
+    map(x->Symbol(strip(x)), split(readline(f), ","))
+end
+
+g_debug = false
+debug_print(str...) = g_debug == true && println(str...)
 
 """
 Main function that performs the distributed join.
@@ -128,57 +148,77 @@ function djoin(leftfn, rightfn, opfn; keycol=nothing, kind=nothing)
     keycol == nothing && throw(ArgumentError("Missing join argument `keycol`."))
     kind == nothing && throw(ArgumentError("Missing join argument `kind`."))
 
-    global g_sids = initslaves_local()
-
+    println("Time consumed in serial part: ")
+    @time begin
     # The serial part: Get the keyhash
     leftkeys = readkeys(leftfn, keycol)
     rightkeys = readkeys(rightfn, keycol)
     keypool = get_keypool(leftkeys, rightkeys)
     keyhash = get_keyhash(keypool)
-    println("LOG: Getting keyhash done.")
+    debug_print("LOG: Getting keyhash done.")
 
     # Partition dataframe
-    dfl = readtable(leftfn)
-    dflparts = partition_df(dfl)
-    dfr = readtable(rightfn)
-    dfrparts = partition_df(dfr)
-    println("LOG: Partitioning dataframes done.")
+    # dfl = readtable(leftfn)
+    # dflparts = partition_df(dfl)
+    # dfr = readtable(rightfn)
+    # dfrparts = partition_df(dfr)
+    # debug_print("LOG: Partitioning dataframes done.")
 
+    # Read headers of both files
+    leftheaders = getheaders(leftfn)
+    rightheaders = getheaders(rightfn)
+
+    # Get the dicts of proc_id => chunk (range).
+    leftchunks = chunkdict(leftfn)
+    rightchunks = chunkdict(rightfn)
+    end # end @time
+
+    println("Time consumed in initprocess: ")
+    @time begin
     # The parallel parts:
     # For each process give a copy of the keyhash and a part of the dataframes.
-    @everywhere include(joinpath(Pkg.dir("DJoin"), "src", "SlaveDefs.jl"))
     @sync for sid in g_sids
-        @async remotecall_fetch(sid, initprocess, dflparts[sid], dfrparts[sid],
-                          keyhash, keycol, g_sids)
+        @async remotecall_fetch(sid, initprocess, leftchunks[sid], rightchunks[sid],
+                                leftheaders, rightheaders, keyhash, keycol, g_sids)
+    end
     end
 
-    println("LOG: Done Initializing slaves.")
+    debug_print("LOG: Done Initializing slaves.")
 
+    println("Time consumed in communicate: ")
+    @time begin
     # Rearrange the rows of the dataframe between processes.
     @sync for sid in g_sids
         @async remotecall_fetch(sid, communicate_push)
     end
+    end
 
-    println("LOG: Data Movement done.")
+    debug_print("LOG: Data Movement done.")
 
     # call join and get an array of refs
     refs = RemoteRef[]
+    println("Time consumed in map: ")
+    @time begin
     @sync for sid in g_sids
         @async begin
             ref = remotecall(sid, joindf, keycol, kind)
             push!(refs, ref)
         end
     end
+    end
 
-    println("LOG: Done calling join on each slave.")
+    debug_print("LOG: Done calling join on each slave.")
 
-    # fetch and concatenate
+    # fetch and concatenate\
+    println("Time consumed in vcat: ")
+    @time begin
     df = DataFrame()
     for ref in refs
         df = vcat(df, fetch(ref))
     end
+    end
 
-    println("LOG: Done accumulating dataframes.")
+    debug_print("LOG: Done accumulating dataframes.")
 
     writetable(opfn, df)
 
@@ -186,7 +226,5 @@ function djoin(leftfn, rightfn, opfn; keycol=nothing, kind=nothing)
     # for i = 1:np
     #     remotecall(i, logdata)
     # end
-
-    rmprocs(g_sids...)
     return 0
 end
