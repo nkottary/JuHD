@@ -1,5 +1,7 @@
+* Compare time spent on communicate with time spent in loding chunks in the cluster setup.
+
 Djoin improvements:
-* Let slaves read chunks instead of sending from namenode.
+* Let workers read chunks instead of sending from namenode.
 * Use that to generate keypool.
 * Put the join files in a HDFS folder instead of vcatting in a single node.
 * Compare with unix join.

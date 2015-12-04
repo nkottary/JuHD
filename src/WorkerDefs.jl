@@ -1,13 +1,13 @@
-# Definitions for the slave nodes.
+# Definitions for the worker nodes.
 
 using DataFrames
 using Blocks
 
 type ProcessCtx
     dfdict_left::Dict{Int, DataFrame}  # Parts of the left DataFrame to be
-                                       # passed to other slaves.
+                                       # passed to other workers.
     dfdict_right::Dict{Int, DataFrame} # Parts of the right DataFrame to be
-                                       # passed to other slaves.
+                                       # passed to other workers.
     accdf_left::DataFrame              # Accumulated left DataFrame
     accdf_right::DataFrame             # Accumulated right DataFrame
 end
@@ -21,7 +21,7 @@ end
 #  hash of keys and process id's `keyhash`.
 # 
 # Returns an dict of indexes of the dataframe. The array at index `i` of the
-#  return value represents the indexes for the process with slave id `i`.
+#  return value represents the indexes for the process with worker id `i`.
 function arrangement_idxs(keyarr, keyhash)
     idxs = Dict()
     for sid in g_sids
@@ -34,7 +34,7 @@ function arrangement_idxs(keyarr, keyhash)
     return idxs
 end
 
-# Get an dict of slave_id => sub_dataframes from the dataframe
+# Get an dict of worker_id => sub_dataframes from the dataframe
 # `df` and dict of indexes `idxs`.
 function idxs_to_dfdict(df, idxs)
     np = length(idxs)
@@ -50,9 +50,11 @@ end
 function get_df_from_block(blk, headers)
     iobuff = as_recordio(blk)
     # First chunk already has header
-    return g_sids[1] == myid() ? readtable(iobuff) : readtable(iobuff,
-                                                               header=false,
-                                                               names=map(Symbol, headers))
+    df = g_sids[1] == myid() ? readtable(iobuff) : readtable(iobuff,
+                                                             header=false,
+                                                             names=map(Symbol, headers))
+    close(iobuff)
+    return df
 end
 
 # Figure out what parts of the received dataframe should be given to what
@@ -64,7 +66,7 @@ end
 #                           CSV files.
 # `keyhash`               : The keyhash generated on the name node (master).
 # `keycol`                : The column on which to join.
-# `sids`                  : The slave id's.  The output of `workers()` on master.
+# `sids`                  : The worker id's.  The output of `workers()` on master.
 function initprocess(leftblk, rightblk, leftheaders, rightheaders,
                      keyhash, keycol, sids)
     global g_sids = sids
@@ -101,8 +103,8 @@ function getrows(procid, typ)
     end
 end
 
-# Pull rows of `typ` dataframe belonging to this slave process
-# from the other slave processes. `typ` is :left or :right.
+# Pull rows of `typ` dataframe belonging to this worker process
+# from the other worker processes. `typ` is :left or :right.
 function pullrows(typ)
     procid = myid()
     refs = RemoteRef[]
