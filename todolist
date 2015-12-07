@@ -1,11 +1,8 @@
-* Compare time spent on communicate with time spent in loding chunks in the cluster setup.
-
-Djoin improvements:
-* Let workers read chunks instead of sending from namenode.
-* Use that to generate keypool.
-* Put the join files in a HDFS folder instead of vcatting in a single node.
-* Compare with unix join.
-* Additional things:
-** Send indexes (byte offset) or entire rows ?
-** Parallel Sort after join.
-** Go through TeraSort.
+Distjoin:
+* Test code on JD Cluster.
+* Work on local and HDFS.
+* Get proper use case.
+* Have option for naive strategy.
+* Get line byte offsets.
+* Distributed key hash algorithm?
+* Improve performance.
