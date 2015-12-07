@@ -25,6 +25,7 @@ function cleanup()
     end
 end
 
+# Correctness test.
 function basic_test()
     djoin(BASIC_LEFT, BASIC_RIGHT, BASIC_JOIN, keycol=:carid, kind=:inner)
     df = readtable(BASIC_JOIN)
@@ -34,26 +35,34 @@ function basic_test()
     @test df == dfbase
 end
 
-function serial_join()
-    println("Serial Big join time")
-    @time join(readtable(BIG_LEFT), readtable(BIG_RIGHT), on=:movieId, kind=:inner)
+# Scale test.
+big_test() = @time djoin(BIG_LEFT, BIG_RIGHT, BIG_JOIN, keycol=:movieId, kind=:inner)
+
+# Serial join scale time.
+serial_join() = @time join(readtable(BIG_LEFT), readtable(BIG_RIGHT),
+                           on=:movieId, kind=:inner)
+
+function argedtest(args...)
+    initworkers(args...)
+    cleanup()
+    basic_test()
+    println("*** TEST: Basic test passed.")
+    big_test()
+    println("*** TEST: Big test passed.")
+    println("*** Time taken in serial join: ")
+    serial_join()
+    cleanupworkers()
 end
 
-function big_test()
-    @time djoin(BIG_LEFT, BIG_RIGHT, BIG_JOIN, keycol=:movieId, kind=:inner)
-    # df = readtable(BIG_JOIN)
-    # dfbase = readtable(BIG_BASE)
-    # sort!(df)
-    # sort!(dfbase)
-    # @test df == dfbase
+# Test with addprocs() on local machine
+local_test() = argedtest(NUMPROCS)
+
+# Test with addprocs() on cluster
+dist_test() = argedtest(JD...)
+
+function main()
+    local_test()
+    # dist_test()
 end
 
-initworkers(NUMPROCS)
-cleanup()
-basic_test()
-println("*** TEST: Basic test passed.")
-big_test()
-println("*** TEST: Big test passed.")
-serial_join()
-cleanup()
-cleanupworkers()
+main()

@@ -138,6 +138,52 @@ end
 g_debug = false
 debug_print(str...) = g_debug == true && println(str...)
 
+function generate_keyhash(leftfn, rightfn, keycol)
+    leftkeys = readkeys(leftfn, keycol)
+    rightkeys = readkeys(rightfn, keycol)
+    keypool = get_keypool(leftkeys, rightkeys)
+    return get_keyhash(keypool)
+end
+
+function initialize_workers(leftfn, rightfn, keycol, keyhash)
+    leftheaders = getheaders(leftfn)
+    rightheaders = getheaders(rightfn)
+
+    # Get the dicts of proc_id => chunk (range).
+    leftchunks = chunkdict(leftfn)
+    rightchunks = chunkdict(rightfn)
+
+    @sync for sid in g_sids
+        @async remotecall_fetch(sid, initprocess, leftchunks[sid], rightchunks[sid],
+                                leftheaders, rightheaders, keyhash, keycol, g_sids)
+    end
+end
+
+function communicate()
+    @sync for sid in g_sids
+        @async remotecall_fetch(sid, communicate_push)
+    end
+end
+
+function mapjoin(keycol, kind)
+    refs = RemoteRef[]
+    @sync for sid in g_sids
+        @async begin
+            ref = remotecall(sid, joindf, keycol, kind)
+            push!(refs, ref)
+        end
+    end
+    return refs
+end
+
+function reducedf(refs)
+    df = DataFrame()
+    for ref in refs
+        df = vcat(df, fetch(ref))
+    end
+    return df
+end
+
 """
 Main function that performs the distributed join.
  `leftfn` and `rightfn` are the left and right table csv filename.
@@ -148,83 +194,35 @@ function djoin(leftfn, rightfn, opfn; keycol=nothing, kind=nothing)
     keycol == nothing && throw(ArgumentError("Missing join argument `keycol`."))
     kind == nothing && throw(ArgumentError("Missing join argument `kind`."))
 
-    println("Time consumed in serial part: ")
-    @time begin
-    # The serial part: Get the keyhash
-    leftkeys = readkeys(leftfn, keycol)
-    rightkeys = readkeys(rightfn, keycol)
-    keypool = get_keypool(leftkeys, rightkeys)
-    keyhash = get_keyhash(keypool)
+    println("Time consumed in generating keyhash: ")
+    @time keyhash = generate_keyhash(leftfn, rightfn, keycol)
     debug_print("LOG: Getting keyhash done.")
 
-    # Partition dataframe
-    # dfl = readtable(leftfn)
-    # dflparts = partition_df(dfl)
-    # dfr = readtable(rightfn)
-    # dfrparts = partition_df(dfr)
-    # debug_print("LOG: Partitioning dataframes done.")
-
-    # Read headers of both files
-    leftheaders = getheaders(leftfn)
-    rightheaders = getheaders(rightfn)
-
-    # Get the dicts of proc_id => chunk (range).
-    leftchunks = chunkdict(leftfn)
-    rightchunks = chunkdict(rightfn)
-    end # end @time
-
     println("Time consumed in initprocess: ")
-    @time begin
-    # The parallel parts:
-    # For each process give a copy of the keyhash and a part of the dataframes.
-    @sync for sid in g_sids
-        @async remotecall_fetch(sid, initprocess, leftchunks[sid], rightchunks[sid],
-                                leftheaders, rightheaders, keyhash, keycol, g_sids)
-    end
-    end
-
+    @time initialize_workers(leftfn, rightfn, keycol, keyhash)
     debug_print("LOG: Done Initializing workers.")
 
     println("Time consumed in communicate: ")
-    @time begin
-    # Rearrange the rows of the dataframe between processes.
-    @sync for sid in g_sids
-        @async remotecall_fetch(sid, communicate_push)
-    end
-    end
-
+    @time communicate()
     debug_print("LOG: Data Movement done.")
 
     # call join and get an array of refs
-    refs = RemoteRef[]
     println("Time consumed in map: ")
-    @time begin
-    @sync for sid in g_sids
-        @async begin
-            ref = remotecall(sid, joindf, keycol, kind)
-            push!(refs, ref)
-        end
-    end
-    end
-
+    @time refs = mapjoin(keycol, kind)
     debug_print("LOG: Done calling join on each worker.")
 
-    # fetch and concatenate\
+    # fetch and concatenate
     println("Time consumed in vcat: ")
-    @time begin
-    df = DataFrame()
-    for ref in refs
-        df = vcat(df, fetch(ref))
-    end
-    end
-
+    @time df = reducedf(refs)
     debug_print("LOG: Done accumulating dataframes.")
 
-    writetable(opfn, df)
+    println("Time consumed in writetable: ")
+    @time writetable(opfn, df)
+    debug_print("LOG: done writetable")
 
     # Uncomment to log the context state of each process
     # for i = 1:np
     #     remotecall(i, logdata)
     # end
-    return 0
+    return df
 end
