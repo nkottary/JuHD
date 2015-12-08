@@ -106,6 +106,9 @@ type HadoopCtx
     HadoopCtx(dfsurl, dfsport, yarnurl, yarnport) =
         new(dfsurl, dfsport, yarnurl, yarnport, 0)
 
+    HadoopCtx(dfsurl, dfsport, yarnurl, yarnport, nprocs) =
+        new(dfsurl, dfsport, yarnurl, yarnport, nprocs)
+
     HadoopCtx(url, dfsport, yarnport) =
         new(url, dfsport, url, yarnport, 0)
 end
@@ -114,6 +117,9 @@ const AWS = HadoopCtx("nn.juliahub.com", 8020, 8032)
 const LOCALHOST = HadoopCtx("localhost", 9000, 8032)
 const JD = HadoopCtx("ip-10-11-191-51.ec2.internal", 8020,
                      "ip-10-5-176-239.ec2.internal", 8050)
+
+const JD2 = HadoopCtx("ip-10-11-191-51.ec2.internal", 8020,
+                     "ip-10-5-176-239.ec2.internal", 8050, 2)
 
 """
 Add julia processes on remote machines in case a Hadoop context is passed
@@ -142,7 +148,7 @@ function addworkers(ctx::HadoopCtx)
     end
     if ctx.nprocs == 0; ctx.nprocs = proccount; end
     global g_wids = addprocs(machines)
-    @everywhere include(joinpath(Pkg.dir("DJoin"), "src", "WorkerDefs.jl"))
+    #@everywhere include(joinpath(Pkg.dir("DJoin"), "src", "WorkerDefs.jl"))
     return nothing
 end
 
@@ -165,13 +171,6 @@ end
 
 g_debug = false
 debug_print(str...) = g_debug == true && println(str...)
-
-function generate_keyhash(leftfn, rightfn, keycol)
-    leftkeys = readkeys(leftfn, keycol)
-    rightkeys = readkeys(rightfn, keycol)
-    keypool = get_keypool(leftkeys, rightkeys)
-    return get_keyhash(keypool)
-end
 
 function initallworkers(leftfn, rightfn, keycol)
     leftheaders = getheaders(leftfn)
