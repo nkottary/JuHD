@@ -196,27 +196,41 @@ function getfairkeyhash()
             refs[wid] = ref
         end
     end
-    keycount = Dict()
-    keyset = Set()
+    keycount = Dict()   # A dict of (worker_id => kcdict), where kcdict
+                        # is a dict of (key => count).
+    keyset = Set()      # A list of unique keys.
     for (wid, ref) in refs
         kc = fetch(ref)
         keycount[wid] = kc
         keyset = union(keyset, keys(kc))
     end
-    keyhash = Dict()
+    keyhash = Dict()    # The final (key => worker_id) dict to return.
+    dist = Dict()       # A dict of (worker_id => number_of_rows_alloted).
+    for wid in g_wids
+        dist[wid] = 0
+    end
     for key in keyset
-        maxcount = 0
-        maxwid = 0
+        maxcount = 0    # The maximum count of this key.
+        maxwids = Int[] # The worker id's for which this key
+                        # occurs maxcount number of times.
+        keysum = 0      # The number of times this key occurs in all workers.
         for wid in g_wids
             if haskey(keycount[wid], key)
                 val = keycount[wid][key]
                 if val > maxcount
                     maxcount = val
-                    maxwid = wid
+                    maxwids = [wid]
+                elseif val == maxcount
+                    push!(maxwids, wid)
                 end
+                keysum += val
             end
         end
-        keyhash[key] = maxwid
+        # *** Is this a variant of knapsack?
+        widcounts = [dist[wid] for wid in maxwids]
+        chosen_wid = maxwids[indmin(widcounts)]
+        keyhash[key] = chosen_wid
+        dist[chosen_wid] += keysum  # Accumulate number of rows alloted to this processor.
     end
     return keyhash
 end
