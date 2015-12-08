@@ -42,8 +42,8 @@ big_test() = @time djoin(BIG_LEFT, BIG_RIGHT, BIG_JOIN, keycol=:movieId, kind=:i
 serial_join() = @time join(readtable(BIG_LEFT), readtable(BIG_RIGHT),
                            on=:movieId, kind=:inner)
 
-function argedtest(args...)
-    initworkers(args...)
+function argedtest(args)
+    addworkers(args)
     cleanup()
     basic_test()
     println("*** TEST: Basic test passed.")
@@ -51,14 +51,14 @@ function argedtest(args...)
     println("*** TEST: Big test passed.")
     println("*** Time taken in serial join: ")
     serial_join()
-    cleanupworkers()
+    rmworkers()
 end
 
 # Test with addprocs() on local machine
 local_test() = argedtest(NUMPROCS)
 
 # Test with addprocs() on cluster
-dist_test() = argedtest(JD...)
+dist_test() = argedtest(JD)
 
 function main()
     local_test()

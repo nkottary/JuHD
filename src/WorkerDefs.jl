@@ -3,16 +3,22 @@
 using DataFrames
 using Blocks
 
-type ProcessCtx
+type WorkerCtx
+    dfl::DataFrame
+    dfr::DataFrame
+    keycol::Symbol
     dfdict_left::Dict{Int, DataFrame}  # Parts of the left DataFrame to be
                                        # passed to other workers.
     dfdict_right::Dict{Int, DataFrame} # Parts of the right DataFrame to be
                                        # passed to other workers.
     accdf_left::DataFrame              # Accumulated left DataFrame
     accdf_right::DataFrame             # Accumulated right DataFrame
+
+    WorkerCtx(dfl, dfr, keycol) = new(dfl, dfr, keycol, Dict(), Dict(),
+                                      DataFrame(), DataFrame())
 end
 
-function Base.show(io::IO, ctx::ProcessCtx)
+function Base.show(io::IO, ctx::WorkerCtx)
     procid = myid()
     print(io, "\n=================\n\nProcess: $procid\n\nDF array left: $(ctx.dfdict_left)\n\nDF array right: $(ctx.dfdict_right)\n\nAcc DF left: $(ctx.accdf_left)\n\nAcc DF right: $(ctx.accdf_right)\n===================\n")
 end
@@ -24,8 +30,8 @@ end
 #  return value represents the indexes for the process with worker id `i`.
 function arrangement_idxs(keyarr, keyhash)
     idxs = Dict()
-    for sid in g_sids
-        idxs[sid] = Int[]
+    for wid in g_wids
+        idxs[wid] = Int[]
     end
     for i = 1:length(keyarr)
         procid = keyhash[keyarr[i]]
@@ -39,8 +45,8 @@ end
 function idxs_to_dfdict(df, idxs)
     np = length(idxs)
     dfdict = Dict()
-    for sid in g_sids
-        dfdict[sid] = df[idxs[sid], :]
+    for wid in g_wids
+        dfdict[wid] = df[idxs[wid], :]
     end
     return dfdict
 end
@@ -50,11 +56,38 @@ end
 function get_df_from_block(blk, headers)
     iobuff = as_recordio(blk)
     # First chunk already has header
-    df = g_sids[1] == myid() ? readtable(iobuff) : readtable(iobuff,
+    df = g_wids[1] == myid() ? readtable(iobuff) : readtable(iobuff,
                                                              header=false,
                                                              names=map(Symbol, headers))
     close(iobuff)
     return df
+end
+
+# Intialize a global context of type `WorkerCtx`.  This function reads the chunks of
+# files as given by the tuples `leftblk` and `righblk`.  `leftblk` and `rightblk` are
+# tuples of (<filename>, <byte range to read>).  `lefheaders` and `rightheaders` are
+# arrays of strings representing column names in the two tables.  `keycol` is the
+# column symbol on which to join.  `wids` are the array of worker id's, the output of
+# `workers()` on the manager machine. 
+function initworkerctx(leftblk, rightblk, leftheaders, rightheaders, keycol, wids)
+    global g_wids = wids
+    dfl = get_df_from_block(leftblk, leftheaders)
+    dfr = get_df_from_block(rightblk, rightheaders)
+    global g_ctx = WorkerCtx(dfl, dfr, keycol)
+end
+
+# count the occurances of each key. Returns a Dict of key => count.
+function getkeycount()
+    keys = [g_ctx.dfl[g_ctx.keycol]; g_ctx.dfr[g_ctx.keycol]]
+    keycount = Dict()
+    for key in keys
+        if haskey(keycount, key)
+            keycount[key] += 1
+        else
+            keycount[key] = 1
+        end
+    end
+    return keycount
 end
 
 # Figure out what parts of the received dataframe should be given to what
@@ -62,56 +95,29 @@ end
 # dataframe in the global context.
 #
 # Parameters:
-# `leftblk` and `rightblk`: The `Block` instance of the left and right
-#                           CSV files.
-# `keyhash`               : The keyhash generated on the name node (master).
-# `keycol`                : The column on which to join.
-# `sids`                  : The worker id's.  The output of `workers()` on master.
-function initprocess(leftblk, rightblk, leftheaders, rightheaders,
-                     keyhash, keycol, sids)
-    global g_sids = sids
-    println("Getting blocks")
-    @time begin
-    dfl = get_df_from_block(leftblk, leftheaders)
-    dfr = get_df_from_block(rightblk, rightheaders)
-    end
-    println("Getting idxs")
-    @time begin
-    idxsl = arrangement_idxs(dfl[keycol], keyhash)
-    idxsr = arrangement_idxs(dfr[keycol], keyhash)
-    end
-
-    println("Getting dict")
-    @time begin
-    dfdict_left = idxs_to_dfdict(dfl, idxsl)
-    dfdict_right = idxs_to_dfdict(dfr, idxsr)
-    end
-
+# `keyhash`               : The keyhash generated on the name node (manager).
+function initdistribution(keyhash)
+    idxsl = arrangement_idxs(g_ctx.dfl[g_ctx.keycol], keyhash)
+    idxsr = arrangement_idxs(g_ctx.dfr[g_ctx.keycol], keyhash)
+    g_ctx.dfdict_left = idxs_to_dfdict(g_ctx.dfl, idxsl)
+    g_ctx.dfdict_right = idxs_to_dfdict(g_ctx.dfr, idxsr)
     procid = myid()
-    accdf_left = dfdict_left[procid]      # df belonging to self
-    accdf_right = dfdict_right[procid]
-    global g_ctx = ProcessCtx(dfdict_left, dfdict_right,
-                              accdf_left, accdf_right)
+    g_ctx.accdf_left = g_ctx.dfdict_left[procid]      # df belonging to self
+    g_ctx.accdf_right = g_ctx.dfdict_right[procid]
 end
 
 # Get the `typ` dataframe belonging to process with id `procid`.
-function getrows(procid, typ)
-    if typ == :left
-        return g_ctx.dfdict_left[procid]
-    else
-        return g_ctx.dfdict_right[procid]
-    end
-end
+getrows(procid, typ) = typ == :left ? g_ctx.dfdict_left[procid] : g_ctx.dfdict_right[procid]
 
 # Pull rows of `typ` dataframe belonging to this worker process
 # from the other worker processes. `typ` is :left or :right.
 function pullrows(typ)
     procid = myid()
     refs = RemoteRef[]
-    @sync for sid in g_sids
-        sid == procid && continue
+    @sync for wid in g_wids
+        wid == procid && continue
         @async begin
-            ref = remotecall(sid, getrows, procid, typ)
+            ref = remotecall(wid, getrows, procid, typ)
             push!(refs, ref)
         end
     end
@@ -133,10 +139,10 @@ end
 function pushrows(typ)
     procid = myid()
     dfdict = typ == :left ? g_ctx.dfdict_left : g_ctx.dfdict_right
-    @sync for sid in g_sids
-        size(dfdict[sid], 1) == 0 && continue # No need to send empty df's
-        procid == sid && continue # No need to send to self
-        @async remotecall_fetch(sid, recvrows, dfdict[sid], typ)
+    @sync for wid in g_wids
+        size(dfdict[wid], 1) == 0 && continue # No need to send empty df's
+        procid == wid && continue # No need to send to self
+        @async remotecall_fetch(wid, recvrows, dfdict[wid], typ)
     end
 end
 
@@ -175,16 +181,16 @@ function joindf(keycol, kind)
 end
 
 # Read a chunk of file `fn`.  The size of the chunk is to be calculated
-# as `number_of_rows_in_fn / length(g_sids)`.  The starting point for reading
-# is calculated as `(indexof(myid() in g_sids) - 1) * chunk_size + 1`.  If this
+# as `number_of_rows_in_fn / length(g_wids)`.  The starting point for reading
+# is calculated as `(indexof(myid() in g_wids) - 1) * chunk_size + 1`.  If this
 # is the last process then it should read to end of file.
 # function readchunk(fn)
 #     filesize = parse(split(readall(`wc -l $fn`))[1]) - 1 # -1 to exclude headers
-#     chunksize = div(filesize, length(g_sids))
+#     chunksize = div(filesize, length(g_wids))
 #     pid = myid()
-#     idx = find(x -> x == pid, g_sids)[1]
+#     idx = find(x -> x == pid, g_wids)[1]
 #     startpt = (idx - 1) * chunksize + 1
-#     endpt = idx == length(g_sids) ? filesize : startpt + chunksize - 1
+#     endpt = idx == length(g_wids) ? filesize : startpt + chunksize - 1
 #     return readchunk(fn, startpt, endpt)
 # end
 # 

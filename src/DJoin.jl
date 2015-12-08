@@ -58,7 +58,7 @@ end
 Get a hash of {key => processor_id} from `keypool`.
 """
 function get_keyhash(keypool)
-    parts = length(g_sids)
+    parts = length(g_wids)
     hash = Dict()
     arr = collect(keypool)
     len = length(arr)
@@ -66,10 +66,10 @@ function get_keyhash(keypool)
     remainder = rem(len, parts)
     psize = bucketsize*parts
     for i = 1:psize
-        hash[arr[i]] = g_sids[div(i-1, bucketsize) + 1]
+        hash[arr[i]] = g_wids[div(i-1, bucketsize) + 1]
     end
     for i = 1:remainder
-        hash[arr[psize + i]] = g_sids[i]
+        hash[arr[psize + i]] = g_wids[i]
     end
     return hash
 end
@@ -80,55 +80,83 @@ Partition a dataframe `df` among processes.
 Returns an dictionary of process_id => dataframe.
 """
 function partition_df(df)
-    n = length(g_sids)
+    n = length(g_wids)
     ret = Dict()
     dsize = size(df, 1)
     psize = div(dsize, n)
     start = 1
     finish = psize 
     for i = 1:n-1
-        ret[g_sids[i]] = df[start:finish, :]
+        ret[g_wids[i]] = df[start:finish, :]
         start = finish + 1
         finish = finish + psize
     end
-    ret[g_sids[n]] = df[start:end, :]
+    ret[g_wids[n]] = df[start:end, :]
     return ret
 end
 
-const AWS = ("nn.juliahub.com", 8020, 8032)
-const LOCALHOST = ("localhost", 9000, 8032)
+type HadoopCtx
+    dfsurl::AbstractString
+    dfsport::Int
+    yarnurl::AbstractString
+    yarnport::Int
+    nprocs::Int        # Number of machines to use.  If this is set to
+                       # 0 then all mahines are used.
+
+    HadoopCtx(dfsurl, dfsport, yarnurl, yarnport) =
+        new(dfsurl, dfsport, yarnurl, yarnport, 0)
+
+    HadoopCtx(url, dfsport, yarnport) =
+        new(url, dfsport, url, yarnport, 0)
+end
+
+const AWS = HadoopCtx("nn.juliahub.com", 8020, 8032)
+const LOCALHOST = HadoopCtx("localhost", 9000, 8032)
+const JD = HadoopCtx("ip-10-11-191-51.ec2.internal", 8020,
+                     "ip-10-5-176-239.ec2.internal", 8050)
 
 """
-Initialize julia processes on the worker nodes.
+Add julia processes on remote machines in case a Hadoop context is passed
+ as argument, else add julia processes on local machine.
+
+If the `nprocs` field of context is set to 0, then all machines returned by
+ yarn are used as workers and nprocs is set to the number of workers.
+
+Returns `nothing`
 """
-function initworkers(url, dfsport, yarnport)
-    dfs = HDFSClient(url, dfsport)
+function addworkers(ctx::HadoopCtx)
+    dfs = HDFSClient(ctx.dfsurl, ctx.dfsport)
     ugi = UserGroupInformation()
-    yarncli = YarnClient(url, yarnport, ugi)
+    yarncli = YarnClient(ctx.yarnurl, ctx.yarnport, ugi)
     nlist = nodes(yarncli)
     keys = nlist.status.keys
     slots = nlist.status.slots
     machines = ASCIIString[]
+    proccount = 0
     for i = 1:length(keys)
         if slots[i] == 1
             push!(machines, keys[i].host)
+            proccount += 1
+            proccount == ctx.nprocs && break
         end
     end
-    # start processes on the workers.
-    global g_sids = addprocs(machines)
+    if ctx.nprocs == 0; ctx.nprocs = proccount; end
+    global g_wids = addprocs(machines)
     @everywhere include(joinpath(Pkg.dir("DJoin"), "src", "WorkerDefs.jl"))
+    return nothing
 end
 
-function initworkers(num)
-    global g_sids = addprocs(num)
+function addworkers(num)
+    global g_wids = addprocs(num)
     @everywhere include(joinpath(Pkg.dir("DJoin"), "src", "WorkerDefs.jl"))
+    return nothing
 end
 
-cleanupworkers() = rmprocs(g_sids...)
+rmworkers() = rmprocs(g_wids...)
 
 # Get a dict where key is the processor id and value is the tuple (filename, range).
 # The tuple is an element in the block array field of the Block type.
-chunkdict(filename) = Dict(zip(g_sids, Block(Base.FS.File(filename)).block))
+chunkdict(filename) = Dict(zip(g_wids, Block(Base.FS.File(filename)).block))
 
 # Get the headers as an array of symbols from a csv file
 getheaders(filename) = open(filename) do f
@@ -145,7 +173,7 @@ function generate_keyhash(leftfn, rightfn, keycol)
     return get_keyhash(keypool)
 end
 
-function initialize_workers(leftfn, rightfn, keycol, keyhash)
+function initallworkers(leftfn, rightfn, keycol)
     leftheaders = getheaders(leftfn)
     rightheaders = getheaders(rightfn)
 
@@ -153,23 +181,62 @@ function initialize_workers(leftfn, rightfn, keycol, keyhash)
     leftchunks = chunkdict(leftfn)
     rightchunks = chunkdict(rightfn)
 
-    @sync for sid in g_sids
-        @async remotecall_fetch(sid, initprocess, leftchunks[sid], rightchunks[sid],
-                                leftheaders, rightheaders, keyhash, keycol, g_sids)
+    @sync for wid in g_wids
+        @async remotecall_fetch(wid, initworkerctx, leftchunks[wid],
+                                rightchunks[wid], leftheaders, rightheaders,
+                                keycol, g_wids)
+    end
+end
+
+function getfairkeyhash()
+    refs = Dict()
+    @sync for wid in g_wids
+        @async begin 
+            ref = remotecall(wid, getkeycount)
+            refs[wid] = ref
+        end
+    end
+    keycount = Dict()
+    keyset = Set()
+    for (wid, ref) in refs
+        kc = fetch(ref)
+        keycount[wid] = kc
+        keyset = union(keyset, keys(kc))
+    end
+    keyhash = Dict()
+    for key in keyset
+        maxcount = 0
+        maxwid = 0
+        for wid in g_wids
+            if haskey(keycount[wid], key)
+                if keycount[wid][key] > maxcount
+                    maxcount = keycount[wid][key]
+                    maxwid = wid
+                end
+            end
+        end
+        keyhash[key] = maxwid
+    end
+    return keyhash
+end
+
+function initalldistribution(keyhash)
+    @sync for wid in g_wids
+        @async remotecall_fetch(wid, initdistribution, keyhash)
     end
 end
 
 function communicate()
-    @sync for sid in g_sids
-        @async remotecall_fetch(sid, communicate_push)
+    @sync for wid in g_wids
+        @async remotecall_fetch(wid, communicate_push)
     end
 end
 
 function mapjoin(keycol, kind)
     refs = RemoteRef[]
-    @sync for sid in g_sids
+    @sync for wid in g_wids
         @async begin
-            ref = remotecall(sid, joindf, keycol, kind)
+            ref = remotecall(wid, joindf, keycol, kind)
             push!(refs, ref)
         end
     end
@@ -194,13 +261,17 @@ function djoin(leftfn, rightfn, opfn; keycol=nothing, kind=nothing)
     keycol == nothing && throw(ArgumentError("Missing join argument `keycol`."))
     kind == nothing && throw(ArgumentError("Missing join argument `kind`."))
 
+    println("Time consumed in init workers: ")
+    @time initallworkers(leftfn, rightfn, keycol)
+    debug_print("LOG: Done Initializing workers.")
+
     println("Time consumed in generating keyhash: ")
-    @time keyhash = generate_keyhash(leftfn, rightfn, keycol)
+    @time keyhash = getfairkeyhash()
     debug_print("LOG: Getting keyhash done.")
 
-    println("Time consumed in initprocess: ")
-    @time initialize_workers(leftfn, rightfn, keycol, keyhash)
-    debug_print("LOG: Done Initializing workers.")
+    println("Time consumed in init distribution: ")
+    @time initalldistribution(keyhash)
+    debug_print("LOG: Done Initializing distribution.")
 
     println("Time consumed in communicate: ")
     @time communicate()
