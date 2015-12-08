@@ -209,8 +209,9 @@ function getfairkeyhash()
         maxwid = 0
         for wid in g_wids
             if haskey(keycount[wid], key)
-                if keycount[wid][key] > maxcount
-                    maxcount = keycount[wid][key]
+                val = keycount[wid][key]
+                if val > maxcount
+                    maxcount = val
                     maxwid = wid
                 end
             end
