@@ -113,14 +113,6 @@ type HadoopCtx
         new(url, dfsport, url, yarnport, 0)
 end
 
-const AWS = HadoopCtx("nn.juliahub.com", 8020, 8032)
-const LOCALHOST = HadoopCtx("localhost", 9000, 8032)
-const JD = HadoopCtx("ip-10-11-191-51.ec2.internal", 8020,
-                     "ip-10-5-176-239.ec2.internal", 8050)
-
-const JD2 = HadoopCtx("ip-10-11-191-51.ec2.internal", 8020,
-                     "ip-10-5-176-239.ec2.internal", 8050, 2)
-
 """
 Add julia processes on remote machines in case a Hadoop context is passed
  as argument, else add julia processes on local machine.
@@ -148,7 +140,7 @@ function addworkers(ctx::HadoopCtx)
     end
     if ctx.nprocs == 0; ctx.nprocs = proccount; end
     global g_wids = addprocs(machines)
-    #@everywhere include(joinpath(Pkg.dir("DJoin"), "src", "WorkerDefs.jl"))
+    @everywhere include(joinpath(Pkg.dir("DJoin"), "src", "WorkerDefs.jl"))
     return nothing
 end
 
