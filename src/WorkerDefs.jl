@@ -24,10 +24,10 @@ function Base.show(io::IO, ctx::WorkerCtx)
 end
 
 # Determine which of the keys in `keyarr` belongs to which process from the
-#  hash of keys and process id's `keyhash`.
-# 
+# hash of keys and process id's `keyhash`.
+#
 # Returns an dict of indexes of the dataframe. The array at index `i` of the
-#  return value represents the indexes for the process with worker id `i`.
+# return value represents the indexes for the process with worker id `i`.
 function arrangement_idxs(keyarr, keyhash)
     idxs = Dict()
     for wid in g_wids
@@ -68,7 +68,7 @@ end
 # tuples of (<filename>, <byte range to read>).  `lefheaders` and `rightheaders` are
 # arrays of strings representing column names in the two tables.  `keycol` is the
 # column symbol on which to join.  `wids` are the array of worker id's, the output of
-# `workers()` on the manager machine. 
+# `workers()` on the manager machine.
 function initworkerctx(leftblk, rightblk, leftheaders, rightheaders, keycol, wids)
     global g_wids = wids
     dfl = get_df_from_block(leftblk, leftheaders)
@@ -76,7 +76,7 @@ function initworkerctx(leftblk, rightblk, leftheaders, rightheaders, keycol, wid
     global g_ctx = WorkerCtx(dfl, dfr, keycol)
 end
 
-# count the occurances of each key. Returns a Dict of key => count.
+# Count the occurances of each key. Returns a Dict of key => count.
 function getkeycount()
     keys = [g_ctx.dfl[g_ctx.keycol]; g_ctx.dfr[g_ctx.keycol]]
     keycount = Dict()
@@ -104,32 +104,6 @@ function initdistribution(keyhash)
     procid = myid()
     g_ctx.accdf_left = g_ctx.dfdict_left[procid]      # df belonging to self
     g_ctx.accdf_right = g_ctx.dfdict_right[procid]
-end
-
-# Get the `typ` dataframe belonging to process with id `procid`.
-getrows(procid, typ) = typ == :left ? g_ctx.dfdict_left[procid] : g_ctx.dfdict_right[procid]
-
-# Pull rows of `typ` dataframe belonging to this worker process
-# from the other worker processes. `typ` is :left or :right.
-function pullrows(typ)
-    procid = myid()
-    refs = RemoteRef[]
-    @sync for wid in g_wids
-        wid == procid && continue
-        @async begin
-            ref = remotecall(wid, getrows, procid, typ)
-            push!(refs, ref)
-        end
-    end
-    for ref in refs
-        df = fetch(ref)
-        size(df, 1) == 0 && continue
-        if typ == :left
-            g_ctx.accdf_left = vcat(g_ctx.accdf_left, df)
-        else
-            g_ctx.accdf_right = vcat(g_ctx.accdf_right, df)
-        end
-    end
 end
 
 # Send the sub-dataframe's to the respective processes. `typ` which
@@ -161,12 +135,8 @@ function communicate_push()
     pushrows(:right)
 end
 
-# Pass sub-dataframes to respective processes.
-function communicate_pull()
-    pullrows(:left)
-    pullrows(:right)
-end
-
+# Write the context to a file.  The file is number by the process id.  For
+# example log of process id 2 will be log2.
 function logdata()
     procid = myid()
     f = open("log$procid", "w")
@@ -175,43 +145,7 @@ function logdata()
 end
 
 # Join the left and right df belonging to you.
-function joindf(keycol, kind)
+function joindf(kind)
     return join(g_ctx.accdf_left, g_ctx.accdf_right,
-                on=keycol, kind=kind)
+                on=g_ctx.keycol, kind=kind)
 end
-
-# Read a chunk of file `fn`.  The size of the chunk is to be calculated
-# as `number_of_rows_in_fn / length(g_wids)`.  The starting point for reading
-# is calculated as `(indexof(myid() in g_wids) - 1) * chunk_size + 1`.  If this
-# is the last process then it should read to end of file.
-# function readchunk(fn)
-#     filesize = parse(split(readall(`wc -l $fn`))[1]) - 1 # -1 to exclude headers
-#     chunksize = div(filesize, length(g_wids))
-#     pid = myid()
-#     idx = find(x -> x == pid, g_wids)[1]
-#     startpt = (idx - 1) * chunksize + 1
-#     endpt = idx == length(g_wids) ? filesize : startpt + chunksize - 1
-#     return readchunk(fn, startpt, endpt)
-# end
-# 
-# function readchunk(fn, startpt, endpt)
-#     file = open(fn, "r")
-#     chardata = readline(file) # read headers
-# 
-#     # seek till startpt
-#     i = 1
-#     while !eof(file) && i != startpt
-#         readline(file)
-#         i += 1
-#     end
-# 
-#     # read till endpt
-#     while !eof(file)
-#         ln = readline(file)
-#         chardata = chardata * ln
-#         i == endpt && break
-#         i += 1
-#     end
-# 
-#     return readtable(IOBuffer(chardata))
-# end

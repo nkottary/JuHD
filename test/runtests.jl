@@ -31,8 +31,8 @@ end
 
 # Correctness test.
 function basic_test()
-    djoin(BASIC_LEFT, BASIC_RIGHT, BASIC_JOIN, keycol=:carid, kind=:inner)
-    df = readtable(BASIC_JOIN)
+    refs = djoin(BASIC_LEFT, BASIC_RIGHT, keycol=:carid, kind=:inner)
+    df = accumulate(refs)
     dfbase = readtable(BASIC_BASE)
     sort!(df)
     sort!(dfbase)
@@ -40,7 +40,7 @@ function basic_test()
 end
 
 # Scale test.
-big_test() = @time djoin(BIG_LEFT, BIG_RIGHT, BIG_JOIN, keycol=:movieId, kind=:inner)
+big_test() = @time djoin(BIG_LEFT, BIG_RIGHT, keycol=:movieId, kind=:inner)
 
 # Serial join scale time.
 serial_join() = @time join(readtable(BIG_LEFT), readtable(BIG_RIGHT),
@@ -55,7 +55,8 @@ function argedtest(args)
     println("\n*** TEST: Basic test passed. ***\n")
 
     println("\n*** TEST: Running big test. ***\n")
-    big_test()
+    refs = big_test()
+    writefile(accumulate(refs), BIG_JOIN)
     println("\n*** TEST: Big test passed. ***\n")
 
     println("*** Time taken in serial join: ")
@@ -80,7 +81,7 @@ function main()
     println("--------------------------------")
     println("|         Remote Test          |")
     println("--------------------------------")
-    dist_test()
+    #dist_test()
 end
 
 main()
