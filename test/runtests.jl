@@ -16,24 +16,17 @@ const BIG_TEST_PATH = joinpath(Pkg.dir("DJoin"), "test", "big_test")
 const BASIC_LEFT = joinpath(BASIC_TEST_PATH, "left.csv")
 const BASIC_RIGHT = joinpath(BASIC_TEST_PATH, "right.csv")
 const BASIC_JOIN = joinpath(BASIC_TEST_PATH, "join.csv")
-const BASIC_BASE = joinpath(BASIC_TEST_PATH, "join_base.csv")
 
 const BIG_LEFT = joinpath(BIG_TEST_PATH, "left.csv")
 const BIG_RIGHT = joinpath(BIG_TEST_PATH, "right.csv")
 const BIG_JOIN = joinpath(BIG_TEST_PATH, "join.csv")
 
-function cleanup()
-    try
-        rm(BASIC_JOIN)
-        rm(BIG_JOIN)
-    end
-end
-
 # Correctness test.
 function basic_test()
     refs = djoin(BASIC_LEFT, BASIC_RIGHT, keycol=:carid, kind=:inner)
     df = accumulate(refs)
-    dfbase = readtable(BASIC_BASE)
+    dfbase = join(readtable(BASIC_LEFT), readtable(BASIC_RIGHT),
+                  on=:carid, kind=:inner)
     sort!(df)
     sort!(dfbase)
     @test df == dfbase
@@ -48,7 +41,6 @@ serial_join() = @time join(readtable(BIG_LEFT), readtable(BIG_RIGHT),
 
 function argedtest(args)
     addworkers(args)
-    cleanup()
     
     println("\n*** TEST: Running basic test. ***\n")
     basic_test()
@@ -65,22 +57,24 @@ function argedtest(args)
 end
 
 # Test with addprocs() on local machine
-local_test() = argedtest(NUMPROCS)
-
-# Test with addprocs() on cluster
-dist_test() = argedtest(JD)
-
-function main()
+function local_test()
     println("--------------------------------")
     println("|          Local Test          |")
     println("--------------------------------")
-    local_test()
-    
-    println("\n\n")
-    
+    argedtest(NUMPROCS)
+end
+
+# Test with addprocs() on cluster
+function dist_test()
     println("--------------------------------")
     println("|         Remote Test          |")
     println("--------------------------------")
+    argedtest(JD)
+end
+
+function main()
+    local_test()
+    println("\n\n")    
     #dist_test()
 end
 
