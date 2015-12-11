@@ -4,6 +4,8 @@ using Base.Test
 include(joinpath(Pkg.dir("DJoin"), "src", "DJoin.jl"))
 
 const NUMPROCS = 2
+const BASIC_KEYCOL = :carid
+const BIG_KEYCOL = :movieId
 
 const AWS = HadoopCtx("nn.juliahub.com", 8020, 8032)
 const LOCALHOST = HadoopCtx("localhost", 9000, 8032)
@@ -23,21 +25,21 @@ const BIG_JOIN = joinpath(BIG_TEST_PATH, "join.csv")
 
 # Correctness test.
 function basic_test()
-    refs = djoin(BASIC_LEFT, BASIC_RIGHT, keycol=:carid, kind=:inner)
+    refs = djoin(BASIC_LEFT, BASIC_RIGHT, keycol=BASIC_KEYCOL, kind=:inner)
     df = accumulate(refs)
     dfbase = join(readtable(BASIC_LEFT), readtable(BASIC_RIGHT),
-                  on=:carid, kind=:inner)
+                  on=BASIC_KEYCOL, kind=:inner)
     sort!(df)
     sort!(dfbase)
     @test df == dfbase
 end
 
 # Scale test.
-big_test() = @time djoin(BIG_LEFT, BIG_RIGHT, keycol=:movieId, kind=:inner)
+big_test() = djoin(BIG_LEFT, BIG_RIGHT, keycol=BIG_KEYCOL, kind=:inner)
 
 # Serial join scale time.
-serial_join() = @time join(readtable(BIG_LEFT), readtable(BIG_RIGHT),
-                           on=:movieId, kind=:inner)
+serial_join() = join(readtable(BIG_LEFT), readtable(BIG_RIGHT),
+                     on=BIG_KEYCOL, kind=:inner)
 
 function argedtest(args)
     addworkers(args)
@@ -47,12 +49,12 @@ function argedtest(args)
     println("\n*** TEST: Basic test passed. ***\n")
 
     println("\n*** TEST: Running big test. ***\n")
-    refs = big_test()
+    @time refs = big_test()
     writefile(accumulate(refs), BIG_JOIN)
     println("\n*** TEST: Big test passed. ***\n")
 
     println("*** Time taken in serial join: ")
-    serial_join()
+    @time serial_join()
     rmworkers()
 end
 

@@ -115,8 +115,8 @@ chunkdict(filename) = Dict(zip(g_wids, Block(Base.FS.File(filename)).block))
 """
 Get the headers as an array of symbols from a csv file.
 """
-getheaders(filename) = open(filename) do f
-    map(x->Symbol(strip(x)), split(readline(f), ","))
+getheaders(filename, delim) = open(filename) do f
+    map(x->Symbol(strip(x)), split(readline(f), delim))
 end
 
 g_debug = false
@@ -127,8 +127,10 @@ Send the table headers, the chunk ranges and `keycol`, the column on which
  join is to happen, to each worker.
 """
 function init_remote_workers(leftfn, rightfn, keycol)
-    leftheaders = getheaders(leftfn)
-    rightheaders = getheaders(rightfn)
+    leftsep = DataFrames.getseparator(leftfn)
+    rightsep = DataFrames.getseparator(leftfn)
+    leftheaders = getheaders(leftfn, leftsep)
+    rightheaders = getheaders(rightfn, rightsep)
 
     # Get the dicts of proc_id => chunk (range).
     leftchunks = chunkdict(leftfn)
@@ -137,7 +139,7 @@ function init_remote_workers(leftfn, rightfn, keycol)
     @sync for wid in g_wids
         @async remotecall_fetch(wid, initworkerctx, leftchunks[wid],
                                 rightchunks[wid], leftheaders, rightheaders,
-                                keycol, g_wids)
+                                leftsep, rightsep, keycol, g_wids)
     end
 end
 

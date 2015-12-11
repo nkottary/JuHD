@@ -53,12 +53,14 @@ end
 
 # Given a tuple `blk` of filename and range and `headers`
 # an array of header symbols, get a dataframe.
-function get_df_from_block(blk, headers)
+function get_df_from_block(blk, headers, sep)
     iobuff = as_recordio(blk)
     # First chunk already has header
-    df = g_wids[1] == myid() ? readtable(iobuff) : readtable(iobuff,
-                                                             header=false,
-                                                             names=map(Symbol, headers))
+    if g_wids[1] == myid()
+        df = readtable(iobuff, separator=sep)
+    else
+        df = readtable(iobuff, separator=sep, header=false, names=map(Symbol, headers))
+    end
     close(iobuff)
     return df
 end
@@ -69,10 +71,11 @@ end
 # arrays of strings representing column names in the two tables.  `keycol` is the
 # column symbol on which to join.  `wids` are the array of worker id's, the output of
 # `workers()` on the manager machine.
-function initworkerctx(leftblk, rightblk, leftheaders, rightheaders, keycol, wids)
+function initworkerctx(leftblk, rightblk, leftheaders, rightheaders,
+                       leftsep, rightsep, keycol, wids)
     global g_wids = wids
-    dfl = get_df_from_block(leftblk, leftheaders)
-    dfr = get_df_from_block(rightblk, rightheaders)
+    dfl = get_df_from_block(leftblk, leftheaders, leftsep)
+    dfr = get_df_from_block(rightblk, rightheaders, rightsep)
     global g_ctx = WorkerCtx(dfl, dfr, keycol)
 end
 
