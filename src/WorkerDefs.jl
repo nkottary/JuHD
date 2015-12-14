@@ -1,7 +1,7 @@
 # Definitions for the worker nodes.
 
 using DataFrames
-using Blocks
+using HadoopBlocks
 
 type WorkerCtx
     dfl::DataFrame
@@ -13,6 +13,7 @@ type WorkerCtx
                                        # passed to other workers.
     accdf_left::DataFrame              # Accumulated left DataFrame
     accdf_right::DataFrame             # Accumulated right DataFrame
+    joinresult::DataFrame
 
     WorkerCtx(dfl, dfr, keycol) = new(dfl, dfr, keycol, Dict(), Dict(),
                                       DataFrame(), DataFrame())
@@ -54,7 +55,7 @@ end
 # Given a tuple `blk` of filename and range and `headers`
 # an array of header symbols, get a dataframe.
 function get_df_from_block(blk, headers, sep)
-    iobuff = as_recordio(blk)
+    iobuff = Blocks.as_recordio(blk)
     # First chunk already has header
     if g_wids[1] == myid()
         df = readtable(iobuff, separator=sep)
@@ -149,6 +150,19 @@ end
 
 # Join the left and right df belonging to you.
 function joindf(kind)
-    return join(g_ctx.accdf_left, g_ctx.accdf_right,
-                on=g_ctx.keycol, kind=kind)
+    g_ctx.joinresult = join(g_ctx.accdf_left, g_ctx.accdf_right,
+                           on=g_ctx.keycol, kind=kind)
+    return g_ctx.joinresult
+end
+
+# Write the join result to a HDFS folder.
+function writeresult(opfolder)
+    pid = myid()
+    idx = indexmap(g_wids)[pid]
+    opfile = HDFSFile(joinpath(opfolder, "join" * idx))
+    if idx == 1
+        printtable(opfile, joinresult)
+    else
+        printtable(opfile, joinresult, header = false)
+    end
 end

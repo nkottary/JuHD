@@ -34,7 +34,7 @@
 
 using Elly
 using DataFrames
-using Blocks
+using HadoopBlocks
 
 const WORKERDEFS_PATH = joinpath(Pkg.dir("DJoin"), "src", "WorkerDefs.jl")
 
@@ -111,6 +111,7 @@ Get a dict where key is the processor id and value is the tuple (filename, range
  The tuple is an element in the `block` array field of the `Block` type.
 """
 chunkdict(filename) = Dict(zip(g_wids, Block(Base.FS.File(filename)).block))
+chunkdict(file::HDFSFile) = Dict(zip(g_wids, Block(file).block))
 
 """
 Get the headers as an array of symbols from a csv file.
@@ -126,11 +127,34 @@ debug_print(str...) = g_debug == true && println(str...)
 Send the table headers, the chunk ranges and `keycol`, the column on which
  join is to happen, to each worker.
 """
-function init_remote_workers(leftfn, rightfn, keycol)
+function init_remote_workers(leftfn, rightfn; keycol=nothing, kind=nothing)
+    keycol == nothing && throw(ArgumentError("Missing join argument `keycol`."))
+    kind == nothing && throw(ArgumentError("Missing join argument `kind`."))
+
     leftsep = DataFrames.getseparator(leftfn)
-    rightsep = DataFrames.getseparator(leftfn)
+    rightsep = DataFrames.getseparator(rightfn)
     leftheaders = getheaders(leftfn, leftsep)
     rightheaders = getheaders(rightfn, rightsep)
+
+    # Get the dicts of proc_id => chunk (range).
+    leftchunks = chunkdict(leftfn)
+    rightchunks = chunkdict(rightfn)
+
+    @sync for wid in g_wids
+        @async remotecall_fetch(wid, initworkerctx, leftchunks[wid],
+                                rightchunks[wid], leftheaders, rightheaders,
+                                leftsep, rightsep, keycol, g_wids)
+    end
+end
+
+function init_remote_workers(left::HDFSFile, right::HDFSFile; keycol=nothing, kind=nothing)
+    keycol == nothing && throw(ArgumentError("Missing join argument `keycol`."))
+    kind == nothing && throw(ArgumentError("Missing join argument `kind`."))
+
+    leftsep = DataFrames.getseparator(left.source.path)
+    rightsep = DataFrames.getseparator(right.source.path)
+    leftheaders = getheaders(left, leftsep)
+    rightheaders = getheaders(right, rightsep)
 
     # Get the dicts of proc_id => chunk (range).
     leftchunks = chunkdict(leftfn)
@@ -235,11 +259,11 @@ Call `joindf` on each worker.
 
 Returns a remote reference to the join result.
 """
-function mapjoin(kind)
+function mapjoin()
     refs = RemoteRef[]
     @sync for wid in g_wids
         @async begin
-            ref = remotecall(wid, joindf, kind)
+            ref = remotecall(wid, joindf)
             push!(refs, ref)
         end
     end
@@ -268,20 +292,10 @@ end
 
 """
 Preform distributed join.
- `leftfn` and `rightfn` are the left and right table csv filename.
- `keycol` is the column symbol on which to join.
- `kind` is the type of join i.e, `:inner`, `:outer` etc.
 
 Returns to remote references to results of the join.
 """
-function djoin(leftfn, rightfn; keycol=nothing, kind=nothing)
-    keycol == nothing && throw(ArgumentError("Missing join argument `keycol`."))
-    kind == nothing && throw(ArgumentError("Missing join argument `kind`."))
-
-    println("Time consumed in init workers: ")
-    @time init_remote_workers(leftfn, rightfn, keycol)
-    debug_print("LOG: Done Initializing workers.")
-
+function djoin()
     println("Time consumed in generating keyhash: ")
     @time keyhash = getkeyhash()
     debug_print("LOG: Getting keyhash done.")
@@ -295,7 +309,7 @@ function djoin(leftfn, rightfn; keycol=nothing, kind=nothing)
     debug_print("LOG: Data Movement done.")
 
     println("Time consumed in map: ")
-    @time refs = mapjoin(kind)
+    @time refs = mapjoin()
     debug_print("LOG: Done calling join on each worker.")
 
     return refs
@@ -313,4 +327,13 @@ function writefile(df, opfn)
     println("Time consumed in writetable: ")
     @time writetable(opfn, df)
     debug_print("LOG: done writetable")
+end
+
+"""
+Make each system write its local join result to an HDFS folder.
+"""
+function mapwrite(opfolder)
+    @sync for wid in g_wids
+        @async remotecall_fetch(wid, writeresult, opfolder)
+    end
 end

@@ -13,7 +13,12 @@ const JD_RIGHT = joinpath(JD_TEST_PATH, "right.tsv")
 const JD_JOIN = joinpath(JD_TEST_PATH, "join.tsv")
 const KEYCOL = :fid
 
-jd_test() = djoin(JD_LEFT, JD_RIGHT, keycol=KEYCOL, kind=:inner)
+function jd_test()
+    println("LOG: Time taken in init workers:")
+    @time init_remote_workers(JD_LEFT, JD_RIGHT, keycol=KEYCOL)
+    println("LOG: Init workers done.")
+    djoin()
+end
 
 # Serial join scale time.
 function serial_join()
